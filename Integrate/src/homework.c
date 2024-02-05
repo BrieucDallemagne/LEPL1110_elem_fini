@@ -2,6 +2,11 @@
 #include <math.h>
 #include "glfem.h"
 
+double integrhelp(double var[3], double xi, double nu){
+    double I = 0;
+    I = xi*var[0] + nu*var[1] + (1-xi-nu)*var[2];
+    return I;
+}
 
 double integrate(double x[3], double y[3], double (*f) (double, double))
 {
@@ -15,9 +20,9 @@ double integrate(double x[3], double y[3], double (*f) (double, double))
         Jacobian = (x[0]-x[2])*(y[0]-y[1]) - (x[0]-x[1])*(y[0]-y[2]);
     }
 
-    double xi[3] = {0.166666666666, 0.16666666666666, 0.666666666666};
-    double nu[3] = {0.166666666666666, 0.66666666666666, 0.1666666666666666};
-    double omega[3] = {0.16666666666, 0.166666666666666, 0.166666666666666};
+    double xi[3] = {0.166666666666, 0.166666666666, 0.666666666666};
+    double nu[3] = {0.166666666666, 0.666666666666, 0.166666666666};
+    double omega[3] = {0.166666666666, 0.166666666666, 0.166666666666};
     double XLoc[3];
     double YLoc[3];
 
@@ -41,11 +46,7 @@ double integrate(double x[3], double y[3], double (*f) (double, double))
     return I;
 }
 
-double integrhelp(double var[3], double xi, double nu){
-    double I = 0;
-    I = xi*var[0] + nu*var[1] + (1-xi-nu)*var[2];
-    return I;
-}
+
 
 double integrateRecursive(double x[3], double y[3], double (*f)(double,double), int n)
 {
