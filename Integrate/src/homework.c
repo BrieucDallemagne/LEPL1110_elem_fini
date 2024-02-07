@@ -10,9 +10,9 @@ double integrhelp(double var[3], double xi, double nu){
 
 double integrate(double x[3], double y[3], double (*f) (double, double))
 {
-    double I = 0;
+    double sum;
 
-    double Jacobian = 0;
+    double Jacobian;
     if ((x[0]-x[1])*(y[0]-y[2]) - (x[0]-x[2])*(y[0]-y[1]) > 0){
         Jacobian = (x[0]-x[1])*(y[0]-y[2]) - (x[0]-x[2])*(y[0]-y[1]);
     }
@@ -20,53 +20,56 @@ double integrate(double x[3], double y[3], double (*f) (double, double))
         Jacobian = (x[0]-x[2])*(y[0]-y[1]) - (x[0]-x[1])*(y[0]-y[2]);
     }
 
-    double xi[3] = {0.166666666666, 0.166666666666, 0.666666666666};
-    double nu[3] = {0.166666666666, 0.666666666666, 0.166666666666};
-    double omega[3] = {0.166666666666, 0.166666666666, 0.166666666666};
-    double XLoc[3];
-    double YLoc[3];
+    const double xi[3] = {1.0/6.0, 2.0/3.0,1/6.0 };
+    const double nu[3] = {1/6.0, 1/6.0,2/3.0};
+    const double omega[3] = {1/6.0, 1/6.0,1/6.0};
 
-    for (int i = 0; i < 3; i++){
-        double xiLoc = xi[i];
-        double nuLoc = nu[i];
-        XLoc[i] = integrhelp(x, xiLoc, nuLoc);
-        YLoc[i] = integrhelp(y, xiLoc, nuLoc);
-        I += f(XLoc[i], YLoc[i]) * omega[i];
+    double xLoc [3]; 
+    double yLoc [3];
+
+    for (int i = 0; i < 3; ++i) {
+        xLoc[i] =  x[0] * (1 - nu[i] -xi[i]) + nu[i] * x[1] + xi[i] *x[2];
+        yLoc[i] =  y[0] * (1 -nu[i] -xi[i]) + nu[i] *y[1] +xi[i] * y[2];
+
     }
 
-    I = I * Jacobian;
+    for (int i = 0; i < 3; ++i) {
+        sum += omega[i] * f(xLoc[i], yLoc[i]);
+    }
 
+    sum *= Jacobian;
 
-  glfemSetColor(GLFEM_BLACK); glfemDrawElement(x,y,3);
-  glfemSetColor(GLFEM_BLUE);  glfemDrawNodes(x,y,3);
-//  glfemSetColor(GLFEM_RED);   glfemDrawNodes(xLoc,yLoc,3);
+    glfemSetColor(GLFEM_BLACK); glfemDrawElement(x,y,3);
+    glfemSetColor(GLFEM_BLUE);  glfemDrawNodes(x,y,3);
+    glfemSetColor(GLFEM_RED);   glfemDrawNodes(xLoc,yLoc,3);
     
-
-
-    return I;
+    return sum;
 }
 
 
 
-double integrateRecursive(double x[3], double y[3], double (*f)(double,double), int n)
-{
+double integrateRecursive(double x[3], double y[3], double (*f)(double , double),int n) {
 
-    if(n == 0){
+    int points[4][3] = {{0 , 3 , 5} , {3 , 4 , 5}, {3 , 1 , 4} , {5 , 4 , 2}};
+    double xi[6] = {0.0 ,1.0 ,0.0 ,0.5 ,0.5 ,0.0};
+    double nu[6] = {0.0 ,0.0 ,1.0 ,0.0 ,0.5 ,0.5};
+    double sum;
+    double xLoc[3];
+    double yLoc[3];
+
+    if (n <= 0) {
         return integrate(x, y, f);
     }
-    else{
-        double I = 0;
-        double x1[3] = {x[0],(x[0]+x[1])/2 ,(x[0]+x[2])/2};
-        double x2[3] = {(x[0]+x[1])/2,x[1],(x[1]+x[2])/2};
-        double x3[3] = {(x[0]+x[2])/2, (x[1]+x[2])/2, x[2]};
-        double y1[3] = {y[0],(y[0]+y[1])/2, (y[0]+y[2])/2};
-        double y2[3] = {(y[0]+y[1])/2, y[1], (y[1]+y[2])/2};
-        double y3[3] = {(y[0]+y[2])/2,  (y[1]+y[2])/2, y[2]};
- 
-        I += integrateRecursive(x1, y1, f, n-1);
-        I += integrateRecursive(x2, y2, f, n-1);
-        I += integrateRecursive(x3, y3, f, n-1);
-        return I;
-    }
+    else {
+        for(int i = 0; i < 4; i++){
 
+            for(int j = 0; j < 3; j++){
+                xLoc[j] =  (x[0] *(1 - xi[points[i][j]] - nu[points[i][j]])) +(x[1]* nu[points[i][j]] )  +( x[2] *xi[points[i][j]] );
+                yLoc[j] = ( y[0]* (1 - xi[points[i][j]] - nu[points[i][j]]) )+( y[1]*  nu[points[i][j]]) + ( y[2]*xi[points[i][j]] );
+            }
+
+            sum += integrateRecursive(xLoc, yLoc, f, n-1);
+        }
+        return sum;
+    }
 }
