@@ -22,7 +22,7 @@ double integrate(double x[3], double y[3], double (*f) (double, double))
 
     const double xi[3] = {1.0/6.0, 2.0/3.0,1/6.0 };
     const double nu[3] = {1/6.0, 1/6.0,2/3.0};
-    const double omega[3] = {1/6.0, 1/6.0,1/6.0};
+    const double omega = 1/6.0;
 
     double xLoc [3]; 
     double yLoc [3];
@@ -34,7 +34,7 @@ double integrate(double x[3], double y[3], double (*f) (double, double))
     }
 
     for (int i = 0; i < 3; ++i) {
-        sum += omega[i] * f(xLoc[i], yLoc[i]);
+        sum += omega * f(xLoc[i], yLoc[i]);
     }
 
     sum *= Jacobian;
@@ -65,7 +65,7 @@ double integrateRecursive(double x[3], double y[3], double (*f)(double , double)
 
             for(int j = 0; j < 3; j++){
                 xLoc[j] =  (x[0] *(1 - xi[points[i][j]] - nu[points[i][j]])) +(x[1]* nu[points[i][j]] )  +( x[2] *xi[points[i][j]] );
-                yLoc[j] = ( y[0]* (1 - xi[points[i][j]] - nu[points[i][j]]) )+( y[1]*  nu[points[i][j]]) + ( y[2]*xi[points[i][j]] );
+                yLoc[j] = (y[0]* (1 - xi[points[i][j]] - nu[points[i][j]]) )+( y[1]*  nu[points[i][j]]) + ( y[2]*xi[points[i][j]] );
             }
 
             sum += integrateRecursive(xLoc, yLoc, f, n-1);
