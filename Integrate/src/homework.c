@@ -2,17 +2,13 @@
 #include <math.h>
 #include "glfem.h"
 
-double integrhelp(double var[3], double xi, double nu){
-    double I = 0;
-    I = xi*var[0] + nu*var[1] + (1-xi-nu)*var[2];
-    return I;
+double area(double x[3], double y[3]) {
+    return 0.5 * fabs((x[0] - x[2]) * (y[1] - y[2]) - (x[1] - x[2]) * (y[0] - y[2]));
 }
-
 double integrate(double x[3], double y[3], double (*f) (double, double))
 {
-    double sum;
-
-    double Jacobian;
+    double Jacobian = 2 * area(x, y);
+    
     if ((x[0]-x[1])*(y[0]-y[2]) - (x[0]-x[2])*(y[0]-y[1]) > 0){
         Jacobian = (x[0]-x[1])*(y[0]-y[2]) - (x[0]-x[2])*(y[0]-y[1]);
     }
@@ -20,40 +16,46 @@ double integrate(double x[3], double y[3], double (*f) (double, double))
         Jacobian = (x[0]-x[2])*(y[0]-y[1]) - (x[0]-x[1])*(y[0]-y[2]);
     }
 
-    const double xi[3] = {1.0/6.0, 2.0/3.0,1/6.0 };
-    const double nu[3] = {1/6.0, 1/6.0,2/3.0};
-    const double omega = 1/6.0;
+    double I = 0.0;
+    double xLoc[3] = {0.0};
+    double yLoc[3] = {0.0};
 
-    double xLoc [3]; 
-    double yLoc [3];
+    double xhi[3] = {1/6.0, 1/6.0, 2/3.0};
+    double nu[3] = {1/6.0, 2/3.0, 1/6.0};
+    double w[3] = {1/6.0, 1/6.0, 1/6.0};
 
-    for (int i = 0; i < 3; ++i) {
-        xLoc[i] =  x[0] * (1 - nu[i] -xi[i]) + nu[i] * x[1] + xi[i] *x[2];
-        yLoc[i] =  y[0] * (1 -nu[i] -xi[i]) + nu[i] *y[1] +xi[i] * y[2];
+    double phi[3];
+    
+    for(int k = 0; k<3; k++){
+        xLoc[k] = 0.0;
+        yLoc[k] = 0.0;
+        phi[0] = 1 - xhi[k] - nu[k];
+        phi[1] = xhi[k];
+        phi[2] = nu[k];
 
+        for(int i = 0; i<3; i++){
+            xLoc[k] += x[i] * phi[i];
+            yLoc[k] += y[i] * phi[i];
+        }
+
+        I += w[k] * f(xLoc[k], yLoc[k]);
     }
 
-    for (int i = 0; i < 3; ++i) {
-        sum += omega * f(xLoc[i], yLoc[i]);
-    }
-
-    sum *= Jacobian;
-
+    I *= Jacobian;
+    
     glfemSetColor(GLFEM_BLACK); glfemDrawElement(x,y,3);
     glfemSetColor(GLFEM_BLUE);  glfemDrawNodes(x,y,3);
     glfemSetColor(GLFEM_RED);   glfemDrawNodes(xLoc,yLoc,3);
     
-    return sum;
+    return I;
 }
-
-
 
 double integrateRecursive(double x[3], double y[3], double (*f)(double , double),int n) {
 
     int points[4][3] = {{0 , 3 , 5} , {3 , 4 , 5}, {3 , 1 , 4} , {5 , 4 , 2}};
     double xi[6] = {0.0 ,1.0 ,0.0 ,0.5 ,0.5 ,0.0};
     double nu[6] = {0.0 ,0.0 ,1.0 ,0.0 ,0.5 ,0.5};
-    double sum;
+    double sum = 0.0;
     double xLoc[3];
     double yLoc[3];
 
