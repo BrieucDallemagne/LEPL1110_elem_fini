@@ -19,9 +19,9 @@ double integrate(double x[3], double y[3], double (*f) (double, double))
 
         for(int k = 0; k<3; k++){
             
-        phi[0] = 1 - xhi[k] - nu[k];
-        phi[1] = xhi[k];
-        phi[2] = nu[k];
+            phi[0] = 1 - xhi[k] - nu[k];
+            phi[1] = xhi[k];
+            phi[2] = nu[k];
 
             for(int i = 0; i<3; i++){
                 xLoc[k] += x[i] * phi[i];
@@ -32,7 +32,11 @@ double integrate(double x[3], double y[3], double (*f) (double, double))
         I += w[j] * f(xLoc[j], yLoc[j]);
     }
 
-    return I
+    glfemSetColor(GLFEM_BLACK); glfemDrawElement(x,y,3);
+    glfemSetColor(GLFEM_BLUE);  glfemDrawNodes(x,y,3);
+    glfemSetColor(GLFEM_RED);   glfemDrawNodes(xLoc,yLoc,3);
+
+    return I;
 
 //
 // ... A modifier :-)
@@ -42,9 +46,7 @@ double integrate(double x[3], double y[3], double (*f) (double, double))
 // Decommenter la ligne pour dessiner aussi les points d'integration
 //
 
-  glfemSetColor(GLFEM_BLACK); glfemDrawElement(x,y,3);
-  glfemSetColor(GLFEM_BLUE);  glfemDrawNodes(x,y,3);
-  glfemSetColor(GLFEM_RED);   glfemDrawNodes(xLoc,yLoc,3);
+
     
 }
 
