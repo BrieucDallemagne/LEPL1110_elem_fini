@@ -64,11 +64,11 @@ void geoMeshGenerate() {
 //
  
     int ierr;
-    int idPlate = gmshModelOccAddRectangle(0, 0, 0, w, h, 0,0, &ierr);
+    int idPlate = gmshModelOccAddRectangle(w/2, h/2, 0, w, h, -1,0, &ierr);
     ErrorGmsh(ierr);
-    int idNotch = gmshModelOccAddDisk(x0, y0, 0, r0, r0, 0,NULL,0,NULL,0,&ierr); 
+    int idNotch = gmshModelOccAddDisk(x0, y0, 0, r0, r0,-1,NULL,0,NULL,0,&ierr);
     ErrorGmsh(ierr);
-    int idHole  = gmshModelOccAddDisk(x1, y1, 0, r1, r1,0,NULL,0,NULL,0,&ierr);  
+    int idHole  = gmshModelOccAddDisk(x1, y1, 0, r1, r1,-1,NULL,0,NULL,0,&ierr);  
     ErrorGmsh(ierr);
     
     int plate[] = {idPlate};    
