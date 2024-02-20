@@ -22,19 +22,19 @@ double geoSize(double x, double y){
     double d1 = theGeometry->dHole;
 
     double hfinal = h;
-    double d = sqrt((x-x0)*(x-x0) + (y-y0)*(y-y0)) - r0;
+    double d = sqrt(pow(x-x0,2) + pow(y-y0,2)) - r0;
     if (d < d0) {
-        double a = (-2*h + 2*h0)/(d0*d0*d0);
-        double b = (3*h  - 3*h0)/(d0*d0);
+        double a = (-2*h + 2*h0)/pow(d0,3);
+        double b = (3*h  - 3*h0)/pow(d0,2);
         double c = 0;
-        hfinal = a*d*d*d + b*d*d + c*d + h0; }
+        hfinal = a*pow(d,3) + b*pow(d,2) + c*d + h0; }
         
-    d = sqrt((x-x1)*(x-x1) + (y-y1)*(y-y1)) - r1;
+    d = sqrt(pow(x-x1,2) + pow(y-y1,2)) - r1;
     if (d < d1) {
-        double a = (-2*h + 2*h1)/(d1*d1*d1);
-        double b = (3*h  - 3*h1)/(d1*d1);
+        double a = (-2*h + 2*h1)/(pow(d1,3));
+        double b = (3*h  - 3*h1)/(pow(d1,2));
         double c = 0;
-        hfinal = fmin(hfinal,a*d*d*d + b*d*d + c*d + h1); }
+        hfinal = fmin(hfinal,a*pow(d,3) + b*pow(d,2) + c*d + h1); }
         
     return hfinal;
     
