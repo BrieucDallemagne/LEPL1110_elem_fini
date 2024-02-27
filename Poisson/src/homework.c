@@ -97,6 +97,7 @@ void femPoissonSolve(femPoissonProblem *theProblem)
     double x[4],y[4],phi[4],dphidxsi[4],dphideta[4],dphidx[4],dphidy[4];
     int iElem,iInteg,iEdge,i,j,map[4];
     int nLocal = theMesh->nLocalNode;
+    //début copilot
     double **A = theSystem->A;
     double *B = theSystem->B;
      
@@ -133,6 +134,7 @@ void femPoissonSolve(femPoissonProblem *theProblem)
             } 
         } 
     }
+    //fin copilot
 
 
     
