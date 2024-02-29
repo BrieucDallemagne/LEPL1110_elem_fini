@@ -90,6 +90,7 @@ void femPoissonSolve(femPoissonProblem *theProblem)
     femFullSystem *theSystem = theProblem->system;
     femIntegration *theRule = theProblem->rule;
     femDiscrete *theSpace = theProblem->space;
+    femPoissonFindBoundaryNodes(theProblem);
  
     if (theSpace->n > 4) Error("Unexpected discrete space size !");  
     double x[4],y[4],phi[4],dphidxsi[4],dphideta[4],dphidx[4],dphidy[4];
@@ -101,101 +102,58 @@ void femPoissonSolve(femPoissonProblem *theProblem)
     int size = theSystem->size;
 
 
+    for (iElem = 0; iElem < theMesh->nElem; iElem++) {
+        femPoissonLocal(theProblem,iElem,map,x,y);
+        for (iInteg =0; iInteg < theRule->n; iInteg++){
+            double xsi = theRule->xsi[iInteg];
+            double eta = theRule->eta[iInteg];
+            double weight = theRule->weight[iInteg];
+            femDiscretePhi2(theSpace,xsi,eta, phi);
+            femDiscreteDphi2 ( theSpace , xsi , eta , dphidxsi , dphideta ) ;
+            double dxdxsi = 0.0, dxdeta = 0.0, dydxsi = 0.0, dydeta = 0.0;
+            double xlocal = 0.0, ylocal = 0.0;
+            for (i=0; i < theSpace->n; i++) {
+                xlocal += phi[i]*x[i];
+                ylocal += phi[i]*y[i];
+                dxdxsi += dphidxsi[i]*x[i];
+                dxdeta += dphideta[i]*x[i];
+                dydxsi += dphidxsi[i]*y[i];
+                dydeta += dphideta[i]*y[i];
 
-
-    for (int nbElem = 0; nbElem < (theMesh->nElem); nbElem++){
-
-        femPoissonLocal(theProblem,nbElem,map,x,y);
-
-        for (int iInt = 0; iInt < (theRule -> n); iInt++){
-
-            //on récup les fonctions de formes 
-            double xsi = theRule->xsi[iInt];
-            double eta = theRule->eta[iInt];
-            double weight = theRule->weight[iInt];
-
-            femDiscretePhi2(theSpace,xsi,eta,phi);
-            femDiscreteDphi2(theSpace,xsi,eta,dphidxsi,dphideta);
-
-            double dxdxsi = 0;
-            double dxdeta = 0;
-            double dydxsi = 0;
-            double dydeta = 0;
-            
-            double xloc = 0;
-            double yloc = 0;
-
-            for (int i = 0; i < (theSpace->n); i++){
-
-                xloc += x[i] * phi[i];
-                yloc += y[i] * phi[i];
-                dxdxsi += x[i] * dphidxsi[i];
-                dxdeta += x[i] * dphideta[i];
-                dydxsi += y[i] * dphidxsi[i];
-                dydeta += y[i] * dphideta[i];
             }
-
-           
-            double jacobian = dxdxsi * dydeta - dxdeta * dydxsi;
-            if(jacobian < 0){
-                if(nLocal == 3){
-                    int temp = theMesh->elem[nLocal*nbElem];
-                    theMesh->elem[nLocal*nbElem] = theMesh->elem[nLocal*nbElem + 1];
-                    theMesh->elem[nLocal*nbElem + 1] = temp;
-                }else{
-                    int temp = theMesh->elem[nLocal*nbElem];
-                    theMesh->elem[nLocal*nbElem] = theMesh->elem[nLocal*nbElem + 1];
-                    theMesh->elem[nLocal*nbElem + 1] = temp;
-                    int temp2 = theMesh->elem[nLocal*nbElem+2];
-                    theMesh->elem[nLocal*nbElem+2] = theMesh->elem[nLocal*nbElem + 3];
-                    theMesh->elem[nLocal*nbElem + 3] = temp2;
+            double jacobian = fabs(dxdxsi*dydeta - dxdeta*dydxsi);
+            for (i=0; i < theSpace->n; i++) {
+                dphidx[i] = (dphidxsi[i]*dydeta - dphideta[i]*dydxsi);
+                dphidy[i] = (-dphidxsi[i]*dxdeta + dphideta[i]*dxdxsi);
+            }
+            double wOverJ = weight/jacobian;
+            double wJack = weight*jacobian;
+            for ( i = 0; i < theSpace -> n ; i ++) {
+                for ( j = 0; j < theSpace -> n ; j ++) {
+                    A[map[i]][map[j]] += wOverJ*(dphidx[i]*dphidx[j] + dphidy[i]*dphidy[j]);
                 }
+                B[map[i]] += wJack*phi[i];
             }
-            jacobian = fabs(jacobian);
 
-            
-            for (int i = 0; i < (theSpace->n); i++){
 
-                dphidx[i] = (dphidxsi[i] * dydeta - dphideta[i] * dydxsi)/jacobian;
-                dphidy[i] = (dphideta[i] * dxdxsi - dphidxsi[i] * dxdeta)/jacobian;
-            }
- 
-            double Jw = jacobian * weight;    
-
-            for (int i = 0; i < (theSpace->n); i++){
-                for (int j = 0; j < (theSpace->n); j++){
-                    theSystem -> A[map[i]][map[j]] += (dphidx[i] * dphidx[j] + dphidy[i] * dphidy[j]) * Jw ;
-                }
-            }
-            for (int i = 0; i < (theSpace->n); i++){    
-                theSystem -> B[map[i]] += phi[i] * Jw;
-            }
         }
     }
-    
-    for (int nbEdge = 0; nbEdge < (theBoundary->nElem ); nbEdge++){
-        if (theBoundary->elem[nbEdge] == -1){
-            for(int i = 0; i < 2; i++){
-                int node = theBoundary->mesh->elem[nbEdge*2+i];
-                femFullSystemConstrain(theSystem, node, 0.0);
+    for (i = 0; i < theBoundary->nElem; i++) {
+        iElem = theBoundary->elem[i];
+        femPoissonLocal(theProblem,iElem,map,x,y);
+        for (iEdge = 0; iEdge < theMesh->nLocalNode; iEdge++) {
+            int iNode = map[iEdge];
+            B[iNode] = 0.0;
+            for (j = 0; j < size; j++) {
+                A[iNode][j] = 0.0;
+                A[j][iNode] = 0.0;
             }
+            A[iNode][iNode] = 1.0;
         }
     }
     
     femFullSystemEliminate(theSystem);
 
-
-
-
-
-
-
-
-
-
-
-
-    
 }
 
 # endif
