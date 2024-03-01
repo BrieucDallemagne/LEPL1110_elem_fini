@@ -88,6 +88,8 @@ void femPoissonSolve(femPoissonProblem *theProblem)
     femFullSystem *theSystem = theProblem->system;
     femIntegration *theRule = theProblem->rule;
     femDiscrete *theSpace = theProblem->space;
+    
+    //femPoissonFindBoundaryNodes(theProblem);
  
     int nLocalNode = theMesh->nLocalNode;
 
@@ -149,7 +151,6 @@ void femPoissonSolve(femPoissonProblem *theProblem)
                     A[map[i]][map[j]] += weight*(dphidx[i]*dphidx[j] + dphidy[i]*dphidy[j])*Jacob;
                 }
             }
-    
             free(dphidxsi);
             free(dphideta);
             free(phi);
@@ -160,17 +161,15 @@ void femPoissonSolve(femPoissonProblem *theProblem)
         free(x);
         free(y);
         free(map);
-
     }
-
-    for(int i = 0; i < theBoundary->nElem; i++){
-        femNodes nodes = theBoundary->mesh->nodes;
-        for(int j = 0; j < 2; j++){
-            femFullSystemConstrain(theSystem,nodes[j],0.0);
+    femMesh *theEdges = theProblem->geo->theEdges;
+    for(int i = 0; i < theEdges->nElem; i++){
+        for(int j = 0; j < theEdges->nLocalNode; j++){
+            femFullSystemConstrain(theSystem,theEdges->elem[i*theEdges->nLocalNode+j],0.0);
         }
     }
-
     femFullSystemEliminate(theSystem);
+    
 }
 
 # endif
