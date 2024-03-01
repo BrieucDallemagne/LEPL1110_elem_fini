@@ -168,6 +168,7 @@ void femPoissonSolve(femPoissonProblem *theProblem)
             femFullSystemConstrain(theSystem,theEdges->elem[i*theEdges->nLocalNode+j],0.0);
         }
     }
+    
     femFullSystemEliminate(theSystem);
     
 }
