@@ -1,0 +1,102 @@
+[
+{
+  "directory": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build",
+  "command": "/usr/bin/gcc -Dgraphic -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/include -g -std=gnu99 -o CMakeFiles/myFem.dir/src/fem.c.o -c /home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/src/fem.c",
+  "file": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/src/fem.c"
+},
+{
+  "directory": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build",
+  "command": "/usr/bin/gcc -Dgraphic -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/include -g -std=gnu99 -o CMakeFiles/myFem.dir/src/glfem.c.o -c /home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/src/glfem.c",
+  "file": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/src/glfem.c"
+},
+{
+  "directory": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build",
+  "command": "/usr/bin/gcc -Dgraphic -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/include -g -std=gnu99 -o CMakeFiles/myFem.dir/src/homework.c.o -c /home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/src/homework.c",
+  "file": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/src/homework.c"
+},
+{
+  "directory": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build",
+  "command": "/usr/bin/gcc -Dgraphic -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/include -g -std=gnu99 -o CMakeFiles/myFem.dir/src/main.c.o -c /home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/src/main.c",
+  "file": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/src/main.c"
+},
+{
+  "directory": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src",
+  "command": "/usr/bin/gcc -D_GLFW_USE_CONFIG_H -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/include -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src -g -fPIC -Wall -std=gnu99 -Wdeclaration-after-statement -o CMakeFiles/glfw.dir/context.c.o -c /home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/context.c",
+  "file": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/context.c"
+},
+{
+  "directory": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src",
+  "command": "/usr/bin/gcc -D_GLFW_USE_CONFIG_H -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/include -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src -g -fPIC -Wall -std=gnu99 -Wdeclaration-after-statement -o CMakeFiles/glfw.dir/init.c.o -c /home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/init.c",
+  "file": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/init.c"
+},
+{
+  "directory": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src",
+  "command": "/usr/bin/gcc -D_GLFW_USE_CONFIG_H -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/include -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src -g -fPIC -Wall -std=gnu99 -Wdeclaration-after-statement -o CMakeFiles/glfw.dir/input.c.o -c /home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/input.c",
+  "file": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/input.c"
+},
+{
+  "directory": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src",
+  "command": "/usr/bin/gcc -D_GLFW_USE_CONFIG_H -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/include -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src -g -fPIC -Wall -std=gnu99 -Wdeclaration-after-statement -o CMakeFiles/glfw.dir/monitor.c.o -c /home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/monitor.c",
+  "file": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/monitor.c"
+},
+{
+  "directory": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src",
+  "command": "/usr/bin/gcc -D_GLFW_USE_CONFIG_H -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/include -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src -g -fPIC -Wall -std=gnu99 -Wdeclaration-after-statement -o CMakeFiles/glfw.dir/vulkan.c.o -c /home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/vulkan.c",
+  "file": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/vulkan.c"
+},
+{
+  "directory": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src",
+  "command": "/usr/bin/gcc -D_GLFW_USE_CONFIG_H -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/include -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src -g -fPIC -Wall -std=gnu99 -Wdeclaration-after-statement -o CMakeFiles/glfw.dir/window.c.o -c /home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/window.c",
+  "file": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/window.c"
+},
+{
+  "directory": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src",
+  "command": "/usr/bin/gcc -D_GLFW_USE_CONFIG_H -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/include -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src -g -fPIC -Wall -std=gnu99 -o CMakeFiles/glfw.dir/x11_init.c.o -c /home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/x11_init.c",
+  "file": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/x11_init.c"
+},
+{
+  "directory": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src",
+  "command": "/usr/bin/gcc -D_GLFW_USE_CONFIG_H -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/include -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src -g -fPIC -Wall -std=gnu99 -o CMakeFiles/glfw.dir/x11_monitor.c.o -c /home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/x11_monitor.c",
+  "file": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/x11_monitor.c"
+},
+{
+  "directory": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src",
+  "command": "/usr/bin/gcc -D_GLFW_USE_CONFIG_H -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/include -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src -g -fPIC -Wall -std=gnu99 -o CMakeFiles/glfw.dir/x11_window.c.o -c /home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/x11_window.c",
+  "file": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/x11_window.c"
+},
+{
+  "directory": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src",
+  "command": "/usr/bin/gcc -D_GLFW_USE_CONFIG_H -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/include -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src -g -fPIC -Wall -std=gnu99 -o CMakeFiles/glfw.dir/xkb_unicode.c.o -c /home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/xkb_unicode.c",
+  "file": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/xkb_unicode.c"
+},
+{
+  "directory": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src",
+  "command": "/usr/bin/gcc -D_GLFW_USE_CONFIG_H -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/include -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src -g -fPIC -Wall -std=gnu99 -o CMakeFiles/glfw.dir/posix_time.c.o -c /home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/posix_time.c",
+  "file": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/posix_time.c"
+},
+{
+  "directory": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src",
+  "command": "/usr/bin/gcc -D_GLFW_USE_CONFIG_H -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/include -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src -g -fPIC -Wall -std=gnu99 -o CMakeFiles/glfw.dir/posix_thread.c.o -c /home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/posix_thread.c",
+  "file": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/posix_thread.c"
+},
+{
+  "directory": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src",
+  "command": "/usr/bin/gcc -D_GLFW_USE_CONFIG_H -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/include -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src -g -fPIC -Wall -std=gnu99 -o CMakeFiles/glfw.dir/glx_context.c.o -c /home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/glx_context.c",
+  "file": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/glx_context.c"
+},
+{
+  "directory": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src",
+  "command": "/usr/bin/gcc -D_GLFW_USE_CONFIG_H -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/include -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src -g -fPIC -Wall -std=gnu99 -o CMakeFiles/glfw.dir/egl_context.c.o -c /home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/egl_context.c",
+  "file": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/egl_context.c"
+},
+{
+  "directory": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src",
+  "command": "/usr/bin/gcc -D_GLFW_USE_CONFIG_H -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/include -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src -g -fPIC -Wall -std=gnu99 -o CMakeFiles/glfw.dir/osmesa_context.c.o -c /home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/osmesa_context.c",
+  "file": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/osmesa_context.c"
+},
+{
+  "directory": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src",
+  "command": "/usr/bin/gcc -D_GLFW_USE_CONFIG_H -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/include -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src -I/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/build/glfw/src -g -fPIC -Wall -std=gnu99 -o CMakeFiles/glfw.dir/linux_joystick.c.o -c /home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/linux_joystick.c",
+  "file": "/home/brieuc/elem_fini/LEPL1110_elem_fini/Poisson/glfw/src/linux_joystick.c"
+}
+]
