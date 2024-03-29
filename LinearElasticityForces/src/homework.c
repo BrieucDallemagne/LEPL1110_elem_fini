@@ -27,7 +27,8 @@ void femElasticityAssembleElements(femProblem *theProblem){
             mapX[j] = 2*map[j];
             mapY[j] = 2*map[j] + 1;
             x[j]    = theNodes->X[map[j]];
-            y[j]    = theNodes->Y[map[j]];} 
+            y[j]    = theNodes->Y[map[j]];
+        } 
         
         for (iInteg=0; iInteg < theRule->n; iInteg++) {    
             double xsi    = theRule->xsi[iInteg];
@@ -44,7 +45,8 @@ void femElasticityAssembleElements(femProblem *theProblem){
                 dxdxsi += x[i]*dphidxsi[i];       
                 dxdeta += x[i]*dphideta[i];   
                 dydxsi += y[i]*dphidxsi[i];   
-                dydeta += y[i]*dphideta[i]; }
+                dydeta += y[i]*dphideta[i]; 
+            }
             double jac = fabs(dxdxsi * dydeta - dxdeta * dydxsi);
             
             for (i = 0; i < theSpace->n; i++) {    
@@ -81,30 +83,80 @@ void femElasticityAssembleNeumann(femProblem *theProblem){
         femBoundaryCondition *theCondition = theProblem->conditions[iBnd];
         femBoundaryType type = theCondition->type;
         double value = theCondition->value;
-
-        //
-        // A completer :-)   
-        //
-
+        
+        int *elem = theCondition->domain->elem;
+        int nElem = theCondition->domain->nElem;
+        if(type == NEUMANN_X || type == NEUMANN_Y){
+            for (int e=0; e<nElem; e++) {
+                for (int j=0; j<nLocal; j++) {
+                    int node = theCondition->domain->mesh->elem[2*elem[e]+j];
+                    if(type == NEUMANN_X){
+                        map[j] = node;
+                        mapU[j] = 2*map[j];
+                        x[j] = theNodes->X[map[j]];
+                        y[j] = theNodes->Y[map[j]]; 
+                    }
+                    else if(type == NEUMANN_Y){
+                        map[j] = node ;
+                        mapU[j] = 2 * map[j] + 1;
+                        x[j] = theNodes->X[map[j]];
+                        y[j] = theNodes->Y[map[j]]; 
+                    }
+                }
+                double jac = 0.0;
+                for (iInteg=0; iInteg < theRule->n; iInteg++) {
+                    double xsi = theRule->xsi[iInteg];
+                    double weight = theRule->weight[iInteg];
+                    femDiscretePhi(theSpace,xsi,phi);
+                    jac = sqrt((x[1]-x[0])*(x[1]-x[0])+(y[1]-y[0])*(y[1]-y[0]))/2.0;
+                    for (i = 0; i < nLocal; i++) {
+                        B[mapU[i]] += phi[i] * value * jac * weight; 
+                    }
+                }
+            }     
+        }
+        
     }
 }
 
+double *femElasticitySolve(femProblem *theProblem) {
 
+    femFullSystem *theSystem = theProblem->system;
 
-double *femElasticitySolve(femProblem *theProblem){
- 
-    //       
-    // A completer :-) 
-    //  
+    femElasticityAssembleElements(theProblem);
+    femElasticityAssembleNeumann(theProblem);
+    int *theConstrainedNodes = theProblem->constrainedNodes;     
+    for (int i=0; i < theSystem->size; i++) {
+        if (theConstrainedNodes[i] != -1) {
+            double value = theProblem->conditions[theConstrainedNodes[i]]->value;
+            femFullSystemConstrain(theSystem,i,value); 
+        }
+    }
 
-     return theProblem->soluce;
+    memcpy(theProblem->soluce,femFullSystemEliminate(theSystem),theProblem->system->size*sizeof(double));
+    return theProblem->soluce;
+
 }
 
-double * femElasticityForces(femProblem *theProblem){        
-           
-    //       
-    // A completer :-) 
-    //  
+double * femElasticityForces(femProblem *theProblem){            
+ 
+    double **A = theProblem->system->A; 
+    double *B = theProblem->system->B;
+    double *x = theProblem->soluce;
+    double *residuals = theProblem->residuals;
+    double size_prob = theProblem->system->size;
 
-    return theProblem->residuals;
+    femFullSystemInit(theProblem->system);
+    femElasticityAssembleElements(theProblem); 
+    femElasticityAssembleNeumann(theProblem);
+
+    for(int i = 0; i < size_prob; i++){
+        residuals[i]= 0.0;
+        for(int j = 0; j < size_prob; j++){
+            residuals[i] += A[i][j] * x[j];
+        } 
+        residuals[i] -= B[i];
+    }
+    return residuals;
+
 }
