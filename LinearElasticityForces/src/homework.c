@@ -29,7 +29,6 @@ void femElasticityAssembleElements(femProblem *theProblem){
             x[j]    = theNodes->X[map[j]];
             y[j]    = theNodes->Y[map[j]];
         } 
-        
         for (iInteg=0; iInteg < theRule->n; iInteg++) {    
             double xsi    = theRule->xsi[iInteg];
             double eta    = theRule->eta[iInteg];
@@ -62,8 +61,11 @@ void femElasticityAssembleElements(femProblem *theProblem){
                                             dphidx[i] * c * dphidy[j]) * jac * weight;                                                                                            
                     A[mapY[i]][mapY[j]] += (dphidy[i] * a * dphidy[j] + 
                                             dphidx[i] * c * dphidx[j]) * jac * weight; }}
-             for (i = 0; i < theSpace->n; i++) {
-                B[mapY[i]] -= phi[i] * g * rho * jac * weight; }}} 
+            for (i = 0; i < theSpace->n; i++) {
+                B[mapY[i]] -= phi[i] * g * rho * jac * weight; 
+            }
+        }
+    } 
 }
 
 
@@ -108,14 +110,13 @@ void femElasticityAssembleNeumann(femProblem *theProblem){
                     double xsi = theRule->xsi[iInteg];
                     double weight = theRule->weight[iInteg];
                     femDiscretePhi(theSpace,xsi,phi);
-                    jac = sqrt((x[1]-x[0])*(x[1]-x[0])+(y[1]-y[0])*(y[1]-y[0]))/2.0;
+                    jac = sqrt(pow(x[1]-x[0], 2) + pow(y[1]-y[0], 2))/2.0;
                     for (i = 0; i < nLocal; i++) {
                         B[mapU[i]] += phi[i] * value * jac * weight; 
                     }
                 }
             }     
-        }
-        
+        }     
     }
 }
 
