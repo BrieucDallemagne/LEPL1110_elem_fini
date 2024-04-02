@@ -1,0 +1,4 @@
+/element_fini/LEPL1110_elem_fini/Project/Project/CMakeFiles/myFem.dir
+/element_fini/LEPL1110_elem_fini/Project/Project/CMakeFiles/run.dir
+/element_fini/LEPL1110_elem_fini/Project/Project/CMakeFiles/edit_cache.dir
+/element_fini/LEPL1110_elem_fini/Project/Project/CMakeFiles/rebuild_cache.dir
