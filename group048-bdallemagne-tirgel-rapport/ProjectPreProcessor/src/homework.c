@@ -75,20 +75,6 @@ void geoMeshGenerateGeo(void) {
 
   geoSetSizeCallback(geoSize);
 
-  /*
-  4 ------------------ 3
-  |                    |
-  |                    |
-  5 ------- 6          |
-             \         |
-              )        |
-             /         |
-  8 ------- 7          |
-  |                    |
-  |                    |
-  1 ------------------ 2
-  */
-
   int ierr;
   double w = theGeometry->LxPlate;
   double h = theGeometry->LyPlate;
@@ -118,9 +104,6 @@ void geoMeshGenerateGeo(void) {
   int idp12 = gmshModelGeoAddPoint(4*w, 2*h/5, 0., lc, 12, &ierr);
 
   int idp13 = gmshModelGeoAddPoint(w, h, 0., lc, 13, &ierr);
-  // int idp14 = gmshModelGeoAddPoint(0., h, 0., lc, 14, &ierr);
-  // int idp15 = gmshModelGeoAddPoint(-5*w, 0., 0., lc, 15, &ierr);
-  // int idp16 = gmshModelGeoAddPoint(-4*w, 0., 0., lc, 16, &ierr);
   int idp14 = gmshModelGeoAddPoint(-h/10, h, 0., lc, 14, &ierr);
   int idp15 = gmshModelGeoAddPoint(-(big_inner_tri + hyp_lower_tri), 0., 0., lc, 15, &ierr);
   int idp16 = gmshModelGeoAddPoint(-big_inner_tri, 0., 0., lc, 16, &ierr);
@@ -148,39 +131,15 @@ void geoMeshGenerateGeo(void) {
   int l9 = gmshModelGeoAddLine(idp15, idp16, 13, &ierr);
   int l10 = gmshModelGeoAddLine(idp16, idp1, 14, &ierr);
 
+  gmshModelGeoSynchronize(&ierr);
+
   // Tags
+
   int lTags[] = {l1, l2, l3, arc1_bottom, arc2_bottom, l4, l5, l6, arc3_up, arc4_up, l7, l8, l9, l10}; // NB : "-l6" because the curve is reversed
   int c1[] = {1};
   c1[0] = gmshModelGeoAddCurveLoop(lTags, 14, 1, 1, &ierr);
   int s1 = gmshModelGeoAddPlaneSurface(c1, 1, 1, &ierr);
   gmshModelGeoSynchronize(&ierr);
-  
-  /*
-  int p1 = gmshModelGeoAddPoint(-w / 2, -h / 2, 0., lc, 1, &ierr);
-  int p2 = gmshModelGeoAddPoint(w / 2, -h / 2, 0., lc, 2, &ierr);
-  int p3 = gmshModelGeoAddPoint(w / 2, h / 2, 0., lc, 3, &ierr);
-  int p4 = gmshModelGeoAddPoint(-w / 2, h / 2, 0., lc, 4, &ierr);
-  int p5 = gmshModelGeoAddPoint(-w / 2, r, 0., lc, 5, &ierr);
-  int p6 = gmshModelGeoAddPoint(0., r, 0., lc, 6, &ierr);
-  int p7 = gmshModelGeoAddPoint(0., -r, 0., lc, 7, &ierr);
-  int p8 = gmshModelGeoAddPoint(-w / 2, -r, 0., lc, 8, &ierr);
-  int p9 = gmshModelGeoAddPoint(0., 0., 0., lc, 9, &ierr); // center of circle
-
-  int l1 = gmshModelGeoAddLine(p1, p2, 1, &ierr);
-  int l2 = gmshModelGeoAddLine(p2, p3, 2, &ierr);
-  int l3 = gmshModelGeoAddLine(p3, p4, 3, &ierr);
-  int l4 = gmshModelGeoAddLine(p4, p5, 4, &ierr);
-  int l5 = gmshModelGeoAddLine(p5, p6, 5, &ierr);
-  int l6 = gmshModelGeoAddCircleArc(p7, p9, p6, 6, 0., 0., 0., &ierr); // NB : the direction of the curve is reversed
-  int l7 = gmshModelGeoAddLine(p7, p8, 7, &ierr);
-  int l8 = gmshModelGeoAddLine(p8, p1, 8, &ierr);
-
-  int lTags[] = {l1, l2, l3, l4, l5, -l6, l7, l8}; // NB : "-l6" because the curve is reversed
-  int c1[] = {1};
-  c1[0] = gmshModelGeoAddCurveLoop(lTags, 8, 1, 0, &ierr);
-  int s1 = gmshModelGeoAddPlaneSurface(c1, 1, 1, &ierr);
-  gmshModelGeoSynchronize(&ierr);
-  */
 
   if (theGeometry->elementType == FEM_QUAD) {
     gmshOptionSetNumber("Mesh.SaveAll", 1, &ierr);
@@ -196,7 +155,8 @@ void geoMeshGenerateGeo(void) {
     gmshModelMeshGenerate(2, &ierr);
   }
 
-  //   gmshFltkRun(&ierr);
+  // gmshFltkRun(&ierr);
+  
 }
 
 void geoMeshGenerateGeoFile(const char *filename) {
