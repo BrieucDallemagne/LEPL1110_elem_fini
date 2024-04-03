@@ -188,6 +188,8 @@ double *femElasticitySolve(femProblem *theProblem) {
   femElasticityAssembleNeumann(theProblem);
   femElasticityApplyDirichlet(theProblem);
 
+  // Implémentation du solver CG (conjugate gradient) + CSR (compressed sparse row)
+
   double* soluce = femFullSystemEliminate(theProblem->system);
   memcpy(theProblem->soluce, soluce, theProblem->system->size * sizeof(double));
   return theProblem->soluce;
