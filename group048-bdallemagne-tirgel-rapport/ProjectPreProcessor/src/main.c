@@ -25,12 +25,12 @@ int main(void) {
   // geoMeshGenerate();
 
   // OPTION 2 : Utilisation de GMSH directement
-   theGeometry->h = 0.05;
-   geoMeshGenerateGeo();
+  theGeometry->h = 0.05;
+  geoMeshGenerateGeo();
 
   // OPTION 3 : Lecture d'un fichier .geo
-  //theGeometry->h = 0.05;
-  //geoMeshGenerateGeoFile("../data/mesh.geo");
+  // theGeometry->h = 0.05;
+  // geoMeshGenerateGeoFile("../data/mesh.geo");
 
   // OPTION 4 : Lecture d'un fichier .msh
   // geoMeshGenerateMshFile("../data/mesh.msh");
