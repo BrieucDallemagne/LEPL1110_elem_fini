@@ -71,7 +71,7 @@ void geoMeshGenerateGeo(void) {
   theGeometry->LxPlate = Lx;
   theGeometry->LyPlate = Ly;
   theGeometry->h = Ly * 0.05;
-  theGeometry->elementType = FEM_TRIANGLE;
+  theGeometry->elementType = FEM_QUAD;
 
   geoSetSizeCallback(geoSize);
 
@@ -144,7 +144,7 @@ void geoMeshGenerateGeo(void) {
   if (theGeometry->elementType == FEM_QUAD) {
     gmshOptionSetNumber("Mesh.SaveAll", 1, &ierr);
     gmshOptionSetNumber("Mesh.RecombineAll", 1, &ierr);
-    gmshOptionSetNumber("Mesh.Algorithm", 8, &ierr);
+    gmshOptionSetNumber("Mesh.Algorithm", 5, &ierr);
     gmshOptionSetNumber("Mesh.RecombinationAlgorithm", 1.0, &ierr);
     gmshModelGeoMeshSetRecombine(2, 1, 45, &ierr);
     gmshModelMeshGenerate(2, &ierr);
@@ -156,7 +156,7 @@ void geoMeshGenerateGeo(void) {
   }
 
   // gmshFltkRun(&ierr);
-  
+
 }
 
 void geoMeshGenerateGeoFile(const char *filename) {
