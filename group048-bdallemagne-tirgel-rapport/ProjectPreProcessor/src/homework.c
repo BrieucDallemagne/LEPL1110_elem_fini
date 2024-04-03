@@ -98,7 +98,7 @@ void geoMeshGenerateGeo(void) {
   // Points
 
   double big_inner_tri = 4*h/5;
-  double thickness_rect = sqrt(pow(h/5, 2) + pow(h/5, 2));
+  double thickness_rect = sqrt(pow(h/10, 2) + pow(h/5, 2));
   double hyp_lower_tri = sqrt(pow(thickness_rect, 2) + pow(thickness_rect, 2));
 
   int idp1 = gmshModelGeoAddPoint(0., 4*h/5, 0., lc, 1, &ierr);
@@ -110,15 +110,18 @@ void geoMeshGenerateGeo(void) {
   int idp6 = gmshModelGeoAddPoint(3*w, 2*h/5, 0., lc, 6, &ierr);
 
   int idp7 = gmshModelGeoAddPoint(5*w, 0., 0., lc, 7, &ierr);
-  int idp8 = gmshModelGeoAddPoint(7*w, 0., 0., lc, 8, &ierr);
-  int idp9 = gmshModelGeoAddPoint(7*w, h/5, 0., lc, 9, &ierr);
+  int idp8 = gmshModelGeoAddPoint(6*w, 0., 0., lc, 8, &ierr);
+  int idp9 = gmshModelGeoAddPoint(6*w, h/5, 0., lc, 9, &ierr);
 
   int idp10 = gmshModelGeoAddPoint(5*w, h/5, 0., lc, 10, &ierr);
   int idp11 = gmshModelGeoAddPoint(5*w, 2*h/5, 0., lc, 11, &ierr);
   int idp12 = gmshModelGeoAddPoint(4*w, 2*h/5, 0., lc, 12, &ierr);
 
   int idp13 = gmshModelGeoAddPoint(w, h, 0., lc, 13, &ierr);
-  int idp14 = gmshModelGeoAddPoint(-h/5, h, 0., lc, 14, &ierr);
+  // int idp14 = gmshModelGeoAddPoint(0., h, 0., lc, 14, &ierr);
+  // int idp15 = gmshModelGeoAddPoint(-5*w, 0., 0., lc, 15, &ierr);
+  // int idp16 = gmshModelGeoAddPoint(-4*w, 0., 0., lc, 16, &ierr);
+  int idp14 = gmshModelGeoAddPoint(-h/10, h, 0., lc, 14, &ierr);
   int idp15 = gmshModelGeoAddPoint(-(big_inner_tri + hyp_lower_tri), 0., 0., lc, 15, &ierr);
   int idp16 = gmshModelGeoAddPoint(-big_inner_tri, 0., 0., lc, 16, &ierr);
 
