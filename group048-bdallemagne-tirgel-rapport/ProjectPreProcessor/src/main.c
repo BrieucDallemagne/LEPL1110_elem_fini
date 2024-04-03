@@ -147,8 +147,8 @@ int main(void) {
 
   free(meshSizeField);
   femElasticityFree(theProblem);
-  geoFree();
-  glfwDestroyWindow(window);  // Destroy the window
+  geoFinalize();
+  glfwDestroyWindow(window); 
   glfwTerminate();
 
 
