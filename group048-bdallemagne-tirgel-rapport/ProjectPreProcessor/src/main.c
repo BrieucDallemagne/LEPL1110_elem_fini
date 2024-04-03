@@ -37,8 +37,22 @@ int main(void) {
 
 
   geoMeshImport();
-  geoSetDomainName(0, "Something");
-  geoSetDomainName(1, "SomethingElse");
+  geoSetDomainName(0, "Rectangle left");
+  geoSetDomainName(1, "Rectangle bottom");
+  geoSetDomainName(2, "Rectangle right");
+  geoSetDomainName(3, "Arc 1");
+  geoSetDomainName(4, "Arc 2");
+  geoSetDomainName(5, "Small rectangle bottom"); 
+  geoSetDomainName(6, "Small rectangle right");
+  geoSetDomainName(7, "Small rectangle top");
+  geoSetDomainName(8, "Arc3");
+  geoSetDomainName(9, "Arc4");
+  geoSetDomainName(10, "Rectangle top");
+  geoSetDomainName(11, "Leaning rectangle left");
+  geoSetDomainName(12, "Leaning rectangle bottom");
+  geoSetDomainName(13, "Leaning rectangle right");
+
+
   geoMeshWrite("../data/mesh.txt");
 
   //
@@ -52,8 +66,11 @@ int main(void) {
   double gy = -9.81;
 
   femProblem *theProblem = femElasticityCreate(theGeometry, E, nu, rho, gx, gy, PLANAR_STRAIN);
-  femElasticityAddBoundaryCondition(theProblem, "Something", DIRICHLET_XY, 0.0, 0.0);
-  femElasticityAddBoundaryCondition(theProblem, "SomethingElse", DIRICHLET_Y, 0.0, NAN);
+
+  femElasticityAddBoundaryCondition(theProblem, "Rectangle bottom", DIRICHLET_XY, 0.0, 0.0);
+  femElasticityAddBoundaryCondition(theProblem, "Leaning rectangle bottom", DIRICHLET_XY, 0.0, 0.0);
+  femElasticityAddBoundaryCondition(theProblem, "Rectangle left", DIRICHLET_XY, 0.0, 0.0);
+
   femElasticityPrint(theProblem);
   femElasticityWrite(theProblem, "../data/problem.txt");
 
