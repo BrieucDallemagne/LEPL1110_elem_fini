@@ -146,11 +146,9 @@ int main(void) {
   // Check if the ESC key was pressed or the window was closed
 
   free(meshSizeField);
-  femElasticityFree(theProblem);
-  geoFinalize();
-  glfwDestroyWindow(window); 
+  femElasticityFree(theProblem); // Segmentation fault problem
+  geoFree();
   glfwTerminate();
-
 
   exit(EXIT_SUCCESS);
   return 0;

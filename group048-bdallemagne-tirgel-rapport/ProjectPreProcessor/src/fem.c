@@ -738,15 +738,16 @@ femProblem *femElasticityCreate(femGeo *theGeometry, double E, double nu, double
 
 
 void femElasticityFree(femProblem *theProblem) {
-  femFullSystemFree(theProblem->system);
-  femIntegrationFree(theProblem->rule);
-  femDiscreteFree(theProblem->space);
-  for(int i = 0; i < theProblem->nBoundaryConditions; i++)
-    free(theProblem->conditions[i]);
-  free(theProblem->conditions);
-  free(theProblem->soluce);
-  free(theProblem->residuals);
-  free(theProblem->constrainedNodes);
+  femFullSystemFree(theProblem->system); // Ok
+  femIntegrationFree(theProblem->rule); // Ok
+  femDiscreteFree(theProblem->space); // Ok
+  // free(theProblem->spaceEdge); // Not created here 
+  for(int i = 0; i < theProblem->nBoundaryConditions; i++) // Ok
+    free(theProblem->conditions[i]); // Ok
+  free(theProblem->conditions); // Ok
+  // free(theProblem->soluce); // Not created here 
+  // free(theProblem->residuals); // Not created here 
+  free(theProblem->constrainedNodes); // Ok
   free(theProblem);
 }
 
