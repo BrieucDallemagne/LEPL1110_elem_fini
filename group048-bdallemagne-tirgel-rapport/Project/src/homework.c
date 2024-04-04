@@ -1,10 +1,10 @@
 #include "fem.h"
 
 // Il faut un fifrelin generaliser ce code.....
-//  (1) Ajouter l'axisymétrique !    (mandatory)
-//  (2) Ajouter les conditions de Neumann !   (mandatory)
-//  (3) Ajouter les conditions en normal et tangentiel !   (strongly advised)
-//  (4) Et remplacer le solveur plein par un truc un fifrelin plus subtil  (mandatory)
+//  (1) Ajouter l'axisymétrique !    (mandatory) // A faire
+//  (2) Ajouter les conditions de Neumann !   (mandatory) // A faire
+//  (3) Ajouter les conditions en normal et tangentiel !   (strongly advised) // OK (à vérifier)
+//  (4) Et remplacer le solveur plein par un truc un fifrelin plus subtil  (mandatory) // OK (à vérifier)
 
 void femElasticityAssembleElements(femProblem *theProblem) {
   femFullSystem *theSystem = theProblem->system;
@@ -70,6 +70,75 @@ void femElasticityAssembleElements(femProblem *theProblem) {
       for (i = 0; i < theSpace->n; i++) {
         B[mapX[i]] += phi[i] * gx * rho * jac * weight;
         B[mapY[i]] += phi[i] * gy * rho * jac * weight;
+      }
+    }
+  }
+}
+
+void femElasticityAssembleElements_axisymetric(femProblem *theProblem) {
+  femFullSystem *theSystem = theProblem->system;
+  femIntegration *theRule = theProblem->rule;
+  femDiscrete *theSpace = theProblem->space;
+  femGeo *theGeometry = theProblem->geometry;
+  femNodes *theNodes = theGeometry->theNodes;
+  femMesh *theMesh = theGeometry->theElements;
+  double x[4], y[4], phi[4], dphidxsi[4], dphideta[4], dphidx[4], dphidy[4];
+  int iElem, iInteg, iEdge, i, j, d, map[4], mapX[4], mapY[4];
+  int nLocal = theMesh->nLocalNode;
+  double a = theProblem->A;
+  double b = theProblem->B;
+  double c = theProblem->C;
+  double rho = theProblem->rho;
+  double gx = theProblem->gx;
+  double gy = theProblem->gy;
+  double **A = theSystem->A;
+  double *B = theSystem->B;
+
+  for (iElem = 0; iElem < theMesh->nElem; iElem++) {
+    for (j = 0; j < nLocal; j++) {
+      map[j] = theMesh->elem[iElem * nLocal + j];
+      mapX[j] = 2 * map[j];
+      mapY[j] = 2 * map[j] + 1;
+      x[j] = theNodes->X[map[j]];
+      y[j] = theNodes->Y[map[j]];
+    }
+
+    for (iInteg = 0; iInteg < theRule->n; iInteg++) {
+      double xsi = theRule->xsi[iInteg];
+      double eta = theRule->eta[iInteg];
+      double weight = theRule->weight[iInteg];
+      femDiscretePhi2(theSpace, xsi, eta, phi);
+      femDiscreteDphi2(theSpace, xsi, eta, dphidxsi, dphideta);
+
+      double dxdxsi = 0.0;
+      double dxdeta = 0.0;
+      double dydxsi = 0.0;
+      double dydeta = 0.0;
+      for (i = 0; i < theSpace->n; i++) {
+        dxdxsi += x[i] * dphidxsi[i];
+        dxdeta += x[i] * dphideta[i];
+        dydxsi += y[i] * dphidxsi[i];
+        dydeta += y[i] * dphideta[i];
+      }
+      double jac = dxdxsi * dydeta - dxdeta * dydxsi;
+      if (jac < 0.0) printf("Negative jacobian! Your mesh is oriented in reverse. The normals will be wrong\n");
+      jac = fabs(jac);
+
+      for (i = 0; i < theSpace->n; i++) {
+        dphidx[i] = (dphidxsi[i] * dydeta - dphideta[i] * dydxsi) / jac;
+        dphidy[i] = (dphideta[i] * dxdxsi - dphidxsi[i] * dxdeta) / jac;
+      }
+      for (i = 0; i < theSpace->n; i++) {
+        for (j = 0; j < theSpace->n; j++) {
+          A[mapX[i]][mapX[j]] += (dphidx[i] * a * dphidx[j] * x[i] + dphidy[i] * c * dphidy[j] * x[i] + dphidx[i] * b * phi[j] + phi[i] * (b * dphidx[j] + a * phi[j]/x[i])) * jac * weight;
+          A[mapX[i]][mapY[j]] += (dphidx[i] * b * dphidy[j] * x[i] + dphidy[i] * c * dphidx[j] * x[i] + phi[i] * b * dphidy[j]) * jac * weight;
+          A[mapY[i]][mapX[j]] += (dphidy[i] * b * dphidx[j] * x[i] + dphidx[i] * c * dphidy[j] * x[i] + dphidy[i] * b * phi[j]) * jac * weight;
+          A[mapY[i]][mapY[j]] += (dphidy[i] * a * dphidy[j] * x[i] + dphidx[i] * c * dphidx[j] * x[i]) * jac * weight;
+        }
+      }
+      for (i = 0; i < theSpace->n; i++) {
+        B[mapX[i]] += phi[i] * gx * rho * x[i] * jac * weight;
+        B[mapY[i]] += phi[i] * gy * rho * x[i] * jac * weight;
       }
     }
   }
@@ -148,7 +217,7 @@ void femElasticityApplyDirichlet(femProblem *theProblem) {
 
     if (type == DIRICHLET_X) {
       double value = theConstrainedNode->value1;
-      femFullSystemConstrain(theSystem, 2 * node + 0, value);
+      femFullSystemConstrain(theSystem, 2 * node, value);
     }
     if (type == DIRICHLET_Y) {
       double value = theConstrainedNode->value1;
@@ -157,7 +226,7 @@ void femElasticityApplyDirichlet(femProblem *theProblem) {
     if (type == DIRICHLET_XY) {
       double value_x = theConstrainedNode->value1;
       double value_y = theConstrainedNode->value2;
-      femFullSystemConstrain(theSystem, 2 * node + 0, value_x);
+      femFullSystemConstrain(theSystem, 2 * node, value_x);
       femFullSystemConstrain(theSystem, 2 * node + 1, value_y);
     }
 
@@ -165,20 +234,27 @@ void femElasticityApplyDirichlet(femProblem *theProblem) {
       double value = theConstrainedNode->value1;
       double nx = theConstrainedNode->nx;
       double ny = theConstrainedNode->ny;
-      // A completer :-)
+      femFullSystemConstrain(theSystem, 2 * node, value * nx);
+      femFullSystemConstrain(theSystem, 2 * node + 1, value * ny);
     }
     if (type == DIRICHLET_T) {
       double value = theConstrainedNode->value1;
       double nx = theConstrainedNode->nx;
       double ny = theConstrainedNode->ny;
-      // A completer :-)
+      double tx = -ny;
+      double ty = nx;
+      femFullSystemConstrain(theSystem, 2 * node, value * tx);
+      femFullSystemConstrain(theSystem, 2 * node + 1, value * ty);
     }
     if (type == DIRICHLET_NT) {
       double value_n = theConstrainedNode->value1;
       double value_t = theConstrainedNode->value2;
       double nx = theConstrainedNode->nx;
       double ny = theConstrainedNode->ny;
-      // A completer :-)
+      double tx = -ny;
+      double ty = nx;
+      femFullSystemConstrain(theSystem, 2 * node, value_n * nx + value_t * tx);
+      femFullSystemConstrain(theSystem, 2 * node + 1, value_n * ny + value_t * ty);
     }
   }
 }
@@ -190,7 +266,8 @@ double *femElasticitySolve(femProblem *theProblem) {
 
   // Implémentation du solver CG (conjugate gradient) + CSR (compressed sparse row)
 
-  double* soluce = femFullSystemEliminate(theProblem->system);
+  // double* soluce = femFullSystemEliminate(theProblem->system);
+  double* soluce = cgSolver(theProblem->system);
   memcpy(theProblem->soluce, soluce, theProblem->system->size * sizeof(double));
   return theProblem->soluce;
 }

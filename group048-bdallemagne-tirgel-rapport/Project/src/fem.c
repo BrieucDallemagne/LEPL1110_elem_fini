@@ -444,6 +444,76 @@ double *femFullSystemEliminate(femFullSystem *mySystem) {
   return (mySystem->B);
 }
 
+double dotProduct(double *v1, double *v2, int size) {
+    double sum = 0;
+    for (int i = 0; i < size; i++) {
+        sum += v1[i] * v2[i];
+    }
+    return sum;
+}
+
+double *cgSolver(femFullSystem *mySystem) {
+    int size = mySystem->size;
+    double *r = malloc(size * sizeof(double));
+    double *p = malloc(size * sizeof(double));
+    double *Ap = malloc(size * sizeof(double));
+    double *x = calloc(size, sizeof(double));
+    double r_dot_init, r_dot_new, alpha, beta;
+
+    for (int i = 0; i < size; i++) {
+        double sum = 0;
+        for(int j = 0; j < size; j++) {
+            sum += mySystem->A[i][j] * x[j];
+        }
+        r[i] = mySystem->B[i] - sum;
+        p[i] = r[i];
+
+    }
+
+    int k = 0;
+    r_dot_init = dotProduct(r, r, size);
+
+    while (k < size) {
+        for (int i = 0; i < size; i++) {
+            double sum = 0;
+            for (int j = 0; j < size; j++) {
+                sum += mySystem->A[i][j] * p[j];
+            }
+            Ap[i] = sum;
+        }
+
+        alpha = r_dot_init / dotProduct(p, Ap, size);
+
+        for (int i = 0; i < size; i++) {
+            x[i] += alpha * p[i];
+            r[i] -= alpha * Ap[i];
+        }
+
+        r_dot_new = dotProduct(r, r, size);
+
+        if (sqrt(r_dot_new) < 1e-10) {
+            break;
+        }
+
+        beta = r_dot_new / r_dot_init;
+
+        for (int i = 0; i < size; i++) {
+            p[i] = r[i] + beta * p[i];
+        }
+
+        r_dot_init = r_dot_new;
+        k++;
+
+    }
+
+    free(r);
+    free(p);
+    free(Ap);
+
+    return (x);
+}
+
+
 void femFullSystemConstrain(femFullSystem *mySystem, int myNode, double myValue) {
   double **A, *B;
   int i, size;
