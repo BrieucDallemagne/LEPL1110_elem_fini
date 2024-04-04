@@ -332,6 +332,12 @@ void femDiscretePhi2(femDiscrete *mySpace, double xsi, double eta, double *phi) 
 
 void femDiscreteDphi2(femDiscrete *mySpace, double xsi, double eta, double *dphidxsi, double *dphideta) { mySpace->dphi2dx(xsi, eta, dphidxsi, dphideta); }
 
+void femDiscreteXsi(femDiscrete *mySpace, double *xsi) { mySpace->x(xsi); }
+
+void femDiscretePhi(femDiscrete *mySpace, double xsi, double *phi) { mySpace->phi(xsi, phi); }
+
+void femDiscreteDphi(femDiscrete *mySpace, double xsi, double *dphidxsi) { mySpace->dphidx(xsi, dphidxsi); }
+
 void femDiscretePrint(femDiscrete *mySpace) {
   int i, j;
   int n = mySpace->n;
