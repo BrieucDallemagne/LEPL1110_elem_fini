@@ -54,6 +54,9 @@ int main(void) {
 
 
   geoMeshWrite("../data/mesh.txt");
+  geoMeshWrite("/element_fini/LEPL1110_elem_fini/group048-bdallemagne-tirgel-rapport/Project/data/mesh.txt");
+  geoMeshWrite("/element_fini/LEPL1110_elem_fini/group048-bdallemagne-tirgel-rapport/ProjectPostProcessor/data/mesh.txt");
+  
 
   //
   //  -2- Definition du probleme
@@ -68,11 +71,16 @@ int main(void) {
   femProblem *theProblem = femElasticityCreate(theGeometry, E, nu, rho, gx, gy, PLANAR_STRAIN);
 
   femElasticityAddBoundaryCondition(theProblem, "Rectangle bottom", DIRICHLET_XY, 0.0, 0.0);
-  femElasticityAddBoundaryCondition(theProblem, "Leaning rectangle bottom", DIRICHLET_XY, 0.0, 0.0);
   femElasticityAddBoundaryCondition(theProblem, "Rectangle left", DIRICHLET_XY, 0.0, 0.0);
-
+  femElasticityAddBoundaryCondition(theProblem, "Leaning rectangle bottom", DIRICHLET_XY, 0.0, 0.0);
+  // femElasticityAddBoundaryCondition(theProblem, "Leaning rectangle left", DIRICHLET_XY, 0.0, 0.0);
+  // femElasticityAddBoundaryCondition(theProblem, "Leaning rectangle right", DIRICHLET_XY, 0.0, 0.0);
+  femElasticityAddBoundaryCondition(theProblem, "Small rectangle bottom", DIRICHLET_XY, 0.0, 0.0);
+  
   femElasticityPrint(theProblem);
   femElasticityWrite(theProblem, "../data/problem.txt");
+  femElasticityWrite(theProblem, "/element_fini/LEPL1110_elem_fini/group048-bdallemagne-tirgel-rapport/Project/data/problem.txt");
+  femElasticityWrite(theProblem, "/element_fini/LEPL1110_elem_fini/group048-bdallemagne-tirgel-rapport/ProjectPostProcessor/data/problem.txt");
 
   //
   //  -3- Champ de la taille de référence du maillage (uniquement pour la visualisation)
