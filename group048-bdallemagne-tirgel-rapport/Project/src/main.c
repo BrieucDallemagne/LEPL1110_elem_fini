@@ -20,6 +20,7 @@ int main(void) {
   double *theSoluce = femElasticitySolve(theProblem);
   int nNodes = theGeometry->theNodes->nNodes;
   femSolutionWrite(nNodes, 2, theSoluce, "../data/UV.txt");
+  femSolutionWrite(nNodes, 2, theSoluce, "/element_fini/LEPL1110_elem_fini/group048-bdallemagne-tirgel-rapport/ProjectPostProcessor/data/UV.txt");
   femElasticityFree(theProblem);
   geoFree();
   return 0;
