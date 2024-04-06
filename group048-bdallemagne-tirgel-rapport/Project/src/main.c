@@ -26,6 +26,11 @@ int main(void) {
   int nNodes = theGeometry->theNodes->nNodes;
   femSolutionWrite(nNodes, 2, theSoluce, "../data/UV.txt");
   femSolutionWrite(nNodes, 2, theSoluce, "/element_fini/LEPL1110_elem_fini/group048-bdallemagne-tirgel-rapport/ProjectPostProcessor/data/UV.txt");
+  
+  clock_t end = clock();
+  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+  printf("Time spent: %f seconds\n", time_spent);
+
   femElasticityFree(theProblem);
   geoFree();
   return 0;
