@@ -444,6 +444,43 @@ double *femFullSystemEliminate(femFullSystem *mySystem) {
   return (mySystem->B);
 }
 
+Sparse_CSR dense_to_csr(double **A, size_t n_rows, size_t n_cols) {
+    Sparse_CSR csr;
+    csr.n_rows = n_rows;
+    csr.n_cols = n_cols;
+    csr.n_nz = 0;
+
+    for (size_t i = 0; i < n_rows; i++) {
+        for (size_t j = 0; j < n_cols; j++) {
+            if (A[i][j] != 0) {
+                csr.n_nz++;
+            }
+        }
+    }
+
+    csr.values = (double *)malloc(csr.n_nz * sizeof(double));
+    csr.col_indices = (size_t *)malloc(csr.n_nz * sizeof(size_t));
+    csr.row_ptrs = (size_t *)calloc((n_rows + 1), sizeof(size_t));
+
+    size_t nnz_index = 0;
+    for (size_t i = 0; i < n_rows; i++) {
+        for (size_t j = 0; j < n_cols; j++) {
+            if (A[i][j] != 0) {
+                csr.values[nnz_index] = A[i][j];
+                csr.col_indices[nnz_index] = j;
+                csr.row_ptrs[i+1]++;
+                nnz_index++;
+            }
+        }
+    }
+    
+    for (size_t i = 2; i <= n_rows; i++) {
+        csr.row_ptrs[i] += csr.row_ptrs[i-1];
+    }
+
+    return csr;
+}
+
 double dotProduct(double *v1, double *v2, int size) {
     double sum = 0;
     for (int i = 0; i < size; i++) {
@@ -459,6 +496,8 @@ double *cgSolver(femFullSystem *mySystem) {
     double *Ap = malloc(size * sizeof(double));
     double *x = calloc(size, sizeof(double));
     double r_dot_init, r_dot_new, alpha, beta;
+
+    // Sparse_CSR A_csr = dense_to_csr(mySystem->A, size, size);
 
     for (int i = 0; i < size; i++) {
         double sum = 0;
