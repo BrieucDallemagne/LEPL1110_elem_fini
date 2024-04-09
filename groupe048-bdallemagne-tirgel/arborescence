@@ -1,0 +1,70 @@
+Project_soluce_2024_hahaha
+├── Project
+│   ├── build
+│   │   ├── CMakeCache.txt
+│   │   ├── CMakeFiles
+│   │   ├── cmake_install.cmake
+│   │   ├── Makefile
+│   │   └── myFem
+│   ├── CMakeLists.txt
+│   ├── data
+│   │   ├── mesh.txt
+│   │   ├── problem.txt
+│   │   └── UV.txt
+│   └── src
+│       ├── fem.c
+│       ├── fem.h
+│       ├── homework.c
+│       └── main.c
+├── ProjectPostProcessor
+│   ├── build
+│   │   ├── CMakeCache.txt
+│   │   ├── CMakeFiles
+│   │   ├── cmake_install.cmake
+│   │   ├── glfw
+│   │   ├── Makefile
+│   │   └── myFem
+│   ├── CMakeLists.txt
+│   ├── glfw
+│   │   ├── CMake
+│   │   ├── CMakeLists.txt
+│   │   ├── include
+│   │   └── src
+│   ├── gmsh
+│   │   └── gmsh-4.12.2-Linux64-sdk
+│   ├── plot.py
+│   └── src
+│       ├── fem.c
+│       ├── fem.h
+│       ├── glfem.c
+│       ├── glfem.h
+│       └── main.c
+└── ProjectPreProcessor
+    ├── build
+    │   ├── CMakeCache.txt
+    │   ├── CMakeFiles
+    │   ├── cmake_install.cmake
+    │   ├── compile_commands.json
+    │   ├── glfw
+    │   ├── Makefile
+    │   └── myFem
+    ├── CMakeLists.txt
+    ├── data
+    │   ├── mesh.geo
+    │   ├── mesh.msh
+    │   ├── mesh.txt
+    │   └── problem.txt
+    ├── glfw
+    │   ├── CMake
+    │   ├── CMakeLists.txt
+    │   ├── include
+    │   └── src
+    ├── gmsh
+    │   └── gmsh-4.12.2-Linux64-sdk
+    └── src
+        ├── fem.c
+        ├── fem.h
+        ├── glfem.c
+        ├── glfem.h
+        ├── homework.c
+        └── main.c
