@@ -96,7 +96,7 @@ void femElasticityAssembleNeumann(femProblem *theProblem) {
   femNodes *theNodes = theGeometry->theNodes;
   femMesh *theEdges = theGeometry->theEdges;
   double x[2], y[2], phi[2];
-  int iBnd, iElem, iInteg, iEdge, i, j, d, map[2], mapU[2];
+  int iBnd, iElem, iInteg, iEdge, i, j, d, map[2], mapU[2], mapUx[2], mapUy[2];
   int nLocal = 2;
   double *B = theSystem->B;
 
@@ -104,48 +104,74 @@ void femElasticityAssembleNeumann(femProblem *theProblem) {
     femBoundaryCondition *theCondition = theProblem->conditions[iBnd];
     femBoundaryType type = theCondition->type;
     double value = theCondition->value1;
-    
     int *elem = theCondition->domain->elem;
-        int nElem = theCondition->domain->nElem;
-        if(type == NEUMANN_X || type == NEUMANN_Y){
-            for (int e=0; e<nElem; e++) {
-                for (int j=0; j<nLocal; j++) {
-                    int node = theCondition->domain->mesh->elem[2*elem[e]+j];
-                    if(type == NEUMANN_X){
-                        map[j] = node;
-                        mapU[j] = 2*map[j];
-                        x[j] = theNodes->X[map[j]];
-                        y[j] = theNodes->Y[map[j]]; 
-                    }
-                    else if(type == NEUMANN_Y){
-                        map[j] = node ;
-                        mapU[j] = 2 * map[j] + 1;
-                        x[j] = theNodes->X[map[j]];
-                        y[j] = theNodes->Y[map[j]]; 
-                    }
-                }
-                double jac = 0.0;
-                for (iInteg=0; iInteg < theRule->n; iInteg++) {
-                    double xsi = theRule->xsi[iInteg];
-                    double weight = theRule->weight[iInteg];
-                    femDiscretePhi(theSpace,xsi,phi);
-                    jac = sqrt(pow(x[1]-x[0], 2) + pow(y[1]-y[0], 2))/2.0;
-                    for (i = 0; i < nLocal; i++) {
-                        B[mapU[i]] += phi[i] * value * jac * weight; 
-                    }
-                }
-            }     
-        }     
+    int nElem = theCondition->domain->nElem;
 
-    //
-    // A completer :-)
-    // Attention, pour le normal tangent on calcule la normale (sortante) au SEGMENT, surtout PAS celle de constrainedNodes
-    //
-    // Une petite aide pour le calcul de la normale :-)
-    // double tx = theNodes->X[node1] - theNodes->X[node0];
-    // double ty = theNodes->Y[node1] - theNodes->Y[node0];
-    // double nx = ty;
-    // double ny = -tx;
+    if(type == NEUMANN_X || type == NEUMANN_Y){
+        for (int e=0; e<nElem; e++) {
+            for (int j=0; j<nLocal; j++) {
+                int node = theCondition->domain->mesh->elem[2*elem[e]+j];
+                if(type == NEUMANN_X){
+                    map[j] = node;
+                    mapU[j] = 2*map[j];
+                    x[j] = theNodes->X[map[j]];
+                    y[j] = theNodes->Y[map[j]]; 
+                }
+                else if(type == NEUMANN_Y){
+                    map[j] = node ;
+                    mapU[j] = 2 * map[j] + 1;
+                    x[j] = theNodes->X[map[j]];
+                    y[j] = theNodes->Y[map[j]]; 
+                }
+            }
+            double jac = 0.0;
+            for (iInteg=0; iInteg < theRule->n; iInteg++) {
+                double xsi = theRule->xsi[iInteg];
+                double weight = theRule->weight[iInteg];
+                femDiscretePhi(theSpace,xsi,phi);
+                jac = sqrt(pow(x[1]-x[0], 2) + pow(y[1]-y[0], 2))/2.0;
+                for (i = 0; i < nLocal; i++) {
+                    B[mapU[i]] += phi[i] * value * jac * weight; 
+                }
+            }
+        }     
+    } 
+    
+    if(type == NEUMANN_N || type == NEUMANN_T){
+        for (int e=0; e<nElem; e++) {
+            for (int j=0; j<nLocal; j++) {
+                int node = theCondition->domain->mesh->elem[2*elem[e]+j];
+                map[j] = node;
+                mapUx[j] = 2*map[j];           
+                mapUy[j] = 2 * map[j] + 1;
+                x[j] = theNodes->X[map[j]];
+                y[j] = theNodes->Y[map[j]]; 
+            }
+            double jac = 0.0;
+            for (iInteg=0; iInteg < theRule->n; iInteg++) {
+                double xsi = theRule->xsi[iInteg];
+                double weight = theRule->weight[iInteg];
+                femDiscretePhi(theSpace,xsi,phi);
+                jac = sqrt(pow(x[1]-x[0], 2) + pow(y[1]-y[0], 2))/2.0;
+                for (i = 0; i < nLocal; i++) {
+                    if(type == NEUMANN_T){
+                        double tx = (theNodes->X[map[1]] - theNodes->X[map[0]]) / jac * 2; 
+                        double ty = (theNodes->Y[map[1]] - theNodes->Y[map[0]]) / jac * 2;
+                        B[mapUx[i]] += phi[i] * value * weight * tx; 
+                        B[mapUy[i]] += phi[i] * value * weight * ty; 
+                    }
+                    else if(type == NEUMANN_N){
+                        double tx = (theNodes->X[map[1]] - theNodes->X[map[0]]) / jac * 2; 
+                        double ty = (theNodes->Y[map[1]] - theNodes->Y[map[0]]) / jac * 2;
+                        double nx = ty;
+                        double ny = -tx;
+                        B[mapUx[i]] += phi[i] * value * weight * nx; 
+                        B[mapUy[i]] += phi[i] * value * weight * ny; 
+                    }
+                }
+            }
+        }     
+    }         
   }
 }
 
