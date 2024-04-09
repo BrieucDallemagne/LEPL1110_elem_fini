@@ -45,8 +45,8 @@ int main(void) {
   geoSetDomainName(5, "Small rectangle bottom"); 
   geoSetDomainName(6, "Small rectangle right");
   geoSetDomainName(7, "Small rectangle top");
-  geoSetDomainName(8, "Arc3");
-  geoSetDomainName(9, "Arc4");
+  geoSetDomainName(8, "Arc 3");
+  geoSetDomainName(9, "Arc 4");
   geoSetDomainName(10, "Rectangle top");
   geoSetDomainName(11, "Leaning rectangle left");
   geoSetDomainName(12, "Leaning rectangle bottom");
@@ -72,20 +72,21 @@ int main(void) {
 
   femElasticityAddBoundaryCondition(theProblem, "Rectangle bottom", DIRICHLET_XY, 0.0, 0.0);
   femElasticityAddBoundaryCondition(theProblem, "Rectangle left", DIRICHLET_X, 0.0, NAN);
-  // femElasticityAddBoundaryCondition(theProblem, "Rectangle right", DIRICHLET_X, 0.0, NAN);
+  femElasticityAddBoundaryCondition(theProblem, "Rectangle right", DIRICHLET_X, 0.0, NAN);
   femElasticityAddBoundaryCondition(theProblem, "Leaning rectangle bottom", DIRICHLET_XY, 0.0, 0.0);
   // femElasticityAddBoundaryCondition(theProblem, "Leaning rectangle left", DIRICHLET_XY, 0.0, 0.0);
   // femElasticityAddBoundaryCondition(theProblem, "Leaning rectangle right", DIRICHLET_XY, 0.0, 0.0);
   femElasticityAddBoundaryCondition(theProblem, "Small rectangle right", DIRICHLET_XY, 0.0, 0.0);
-  // femElasticityAddBoundaryCondition(theProblem, "Small rectangle bottom", DIRICHLET_XY, 0.0, 0.0);
+  femElasticityAddBoundaryCondition(theProblem, "Small rectangle bottom", DIRICHLET_XY, 0.0, 0.0);
   // femElasticityAddBoundaryCondition(theProblem, "Small rectangle bottom", DIRICHLET_NT, 0.0, 0.0);
   // femElasticityAddBoundaryCondition(theProblem, "Arc 1", DIRICHLET_XY, 0.0, 0.0);
   // femElasticityAddBoundaryCondition(theProblem, "Arc 2", DIRICHLET_XY, 0.0, 0.0);
   // femElasticityAddBoundaryCondition(theProblem, "Small rectangle top", DIRICHLET_XY, 0.0, 0.0);
   // femElasticityAddBoundaryCondition(theProblem, "Small rectangle right", DIRICHLET_XY, 0.0, 0.0);
   // femElasticityAddBoundaryCondition(theProblem, "Rectangle top", DIRICHLET_XY, 0.0, 0.0);
-  femElasticityAddBoundaryCondition(theProblem, "Leaning rectangle left", NEUMANN_N, -3e6, NAN);
+  femElasticityAddBoundaryCondition(theProblem, "Leaning rectangle left", NEUMANN_N, -5e6, NAN);
   //femElasticityAddBoundaryCondition(theProblem, "Rectangle top", NEUMANN_Y, -1.5e8, NAN);
+  //femElasticityAddBoundaryCondition(theProblem, "Arc 4", NEUMANN_Y, -3e6, NAN);
   
   femElasticityPrint(theProblem);
   femElasticityWrite(theProblem, "../data/problem.txt");
