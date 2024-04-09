@@ -2,8 +2,8 @@
 #include "fem.h"
 
 // Il faut un fifrelin generaliser ce code.....
-//  (1) Ajouter l'axisymétrique !    (mandatory)
-//  (2) Ajouter les conditions de Neumann !   (mandatory)
+//  (1) Ajouter l'axisymétrique ! (mandatory)
+//  (2) Ajouter les conditions de Neumann ! (mandatory)
 //  (3) Ajouter les conditions en normal et tangentiel !   (strongly advised)
 //  (4) Et remplacer le solveur plein par un truc un fifrelin plus subtil  (mandatory)
 
@@ -120,7 +120,7 @@ void femElasticityAssembleNeumann(femProblem *theProblem) {
                       y[j] = theNodes->Y[map[j]]; 
                   }
                   else if(type == NEUMANN_Y){
-                      map[j] = node ;
+                      map[j] = node;
                       mapU[j] = 2 * map[j] + 1;
                       x[j] = theNodes->X[map[j]];
                       y[j] = theNodes->Y[map[j]]; 
@@ -154,8 +154,8 @@ void femElasticityAssembleNeumann(femProblem *theProblem) {
                   double weight = theRule->weight[iInteg];
                   femDiscretePhi(theSpace,xsi,phi); 
 
-                  double tx = (theNodes->X[map[1]] - theNodes->X[map[0]]) / jac * 2; 
-                  double ty = (theNodes->Y[map[1]] - theNodes->Y[map[0]]) / jac * 2;
+                  double tx = (theNodes->X[map[1]] - theNodes->X[map[0]]) / jac; 
+                  double ty = (theNodes->Y[map[1]] - theNodes->Y[map[0]]) / jac;
 
                   for (i = 0; i < nLocal; i++) {
                       if(type == NEUMANN_T){
