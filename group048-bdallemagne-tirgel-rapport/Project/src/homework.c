@@ -1,10 +1,11 @@
+
 #include "fem.h"
 
 // Il faut un fifrelin generaliser ce code.....
-//  (1) Ajouter l'axisymétrique !    (mandatory) // Ok (à vérifier)
-//  (2) Ajouter les conditions de Neumann !   (mandatory) // A faire
-//  (3) Ajouter les conditions en normal et tangentiel !   (strongly advised) // A faire (à vérifier)
-//  (4) Et remplacer le solveur plein par un truc un fifrelin plus subtil  (mandatory) // OK (à vérifier)
+//  (1) Ajouter l'axisymétrique !    (mandatory)
+//  (2) Ajouter les conditions de Neumann !   (mandatory)
+//  (3) Ajouter les conditions en normal et tangentiel !   (strongly advised)
+//  (4) Et remplacer le solveur plein par un truc un fifrelin plus subtil  (mandatory)
 
 void femElasticityAssembleElements(femProblem *theProblem) {
   femFullSystem *theSystem = theProblem->system;
@@ -24,6 +25,7 @@ void femElasticityAssembleElements(femProblem *theProblem) {
   double gy = theProblem->gy;
   double **A = theSystem->A;
   double *B = theSystem->B;
+  double r = 0.0;
 
   for (iElem = 0; iElem < theMesh->nElem; iElem++) {
     for (j = 0; j < nLocal; j++) {
@@ -50,6 +52,7 @@ void femElasticityAssembleElements(femProblem *theProblem) {
         dxdeta += x[i] * dphideta[i];
         dydxsi += y[i] * dphidxsi[i];
         dydeta += y[i] * dphideta[i];
+        r += x[i] * phi[i];
       }
       double jac = dxdxsi * dydeta - dxdeta * dydxsi;
       if (jac < 0.0) printf("Negative jacobian! Your mesh is oriented in reverse. The normals will be wrong\n");
@@ -61,24 +64,23 @@ void femElasticityAssembleElements(femProblem *theProblem) {
       }
       for (i = 0; i < theSpace->n; i++) {
         for (j = 0; j < theSpace->n; j++) {
-          if (theProblem->planarStrainStress = AXISYM || PLANAR_STRESS){
-             A[mapX[i]][mapX[j]] += (dphidx[i] * a * dphidx[j] * x[i] + dphidy[i] * c * dphidy[j] * x[i] + dphidx[i] * b * phi[j] + phi[i] * (b * dphidx[j] + a * phi[j]/x[i])) * jac * weight;
-             A[mapX[i]][mapY[j]] += (dphidx[i] * b * dphidy[j] * x[i] + dphidy[i] * c * dphidx[j] * x[i] + phi[i] * b * dphidy[j]) * jac * weight;
-             A[mapY[i]][mapX[j]] += (dphidy[i] * b * dphidx[j] * x[i] + dphidx[i] * c * dphidy[j] * x[i] + dphidy[i] * b * phi[j]) * jac * weight;
-             A[mapY[i]][mapY[j]] += (dphidy[i] * a * dphidy[j] * x[i] + dphidx[i] * c * dphidx[j] * x[i]) * jac * weight;
+          if (theProblem->planarStrainStress = AXISYM){
+             A[mapX[i]][mapX[j]] += (dphidx[i] * a * dphidx[j] * r + dphidy[i] * c * dphidy[j] * r + dphidx[i] * b * phi[j] + phi[i] * (b * dphidx[j] + a * phi[j]/r)) * jac * weight;
+             A[mapX[i]][mapY[j]] += (dphidx[i] * b * dphidy[j] * r + dphidy[i] * c * dphidx[j] * r + phi[i] * b * dphidy[j]) * jac * weight;
+             A[mapY[i]][mapX[j]] += (dphidy[i] * b * dphidx[j] * r + dphidx[i] * c * dphidy[j] * r + dphidy[i] * b * phi[j]) * jac * weight;
+             A[mapY[i]][mapY[j]] += (dphidy[i] * a * dphidy[j] * r + dphidx[i] * c * dphidx[j] * r) * jac * weight;
           }else{
             A[mapX[i]][mapX[j]] += (dphidx[i] * a * dphidx[j] + dphidy[i] * c * dphidy[j]) * jac * weight;
             A[mapX[i]][mapY[j]] += (dphidx[i] * b * dphidy[j] + dphidy[i] * c * dphidx[j]) * jac * weight;
             A[mapY[i]][mapX[j]] += (dphidy[i] * b * dphidx[j] + dphidx[i] * c * dphidy[j]) * jac * weight;
             A[mapY[i]][mapY[j]] += (dphidy[i] * a * dphidy[j] + dphidx[i] * c * dphidx[j]) * jac * weight;
           }
-          
         }
       }
       for (i = 0; i < theSpace->n; i++) {
-        if (theProblem->planarStrainStress = AXISYM || PLANAR_STRESS){
-          B[mapX[i]] += phi[i] * gx * rho * x[i] * jac * weight;
-          B[mapY[i]] += phi[i] * gy * rho * x[i] * jac * weight;
+        if (theProblem->planarStrainStress = AXISYM){
+          B[mapX[i]] += phi[i] * gx * rho * r * jac * weight;
+          B[mapY[i]] += phi[i] * gy * rho * r * jac * weight;
         }else{
           B[mapX[i]] += phi[i] * gx * rho * jac * weight;
           B[mapY[i]] += phi[i] * gy * rho * jac * weight;
@@ -89,16 +91,16 @@ void femElasticityAssembleElements(femProblem *theProblem) {
 }
 
 void femElasticityAssembleNeumann(femProblem *theProblem) {
-  femFullSystem *theSystem = theProblem->system;
-  femIntegration *theRule = theProblem->ruleEdge;
-  femDiscrete *theSpace = theProblem->spaceEdge;
-  femGeo *theGeometry = theProblem->geometry;
-  femNodes *theNodes = theGeometry->theNodes;
-  femMesh *theEdges = theGeometry->theEdges;
-  double x[2], y[2], phi[2];
-  int iBnd, iElem, iInteg, iEdge, i, j, d, map[2], mapU[2], mapUx[2], mapUy[2];
-  int nLocal = 2;
-  double *B = theSystem->B;
+    femFullSystem  *theSystem = theProblem->system;
+    femIntegration *theRule = theProblem->ruleEdge;
+    femDiscrete    *theSpace = theProblem->spaceEdge;
+    femGeo         *theGeometry = theProblem->geometry;
+    femNodes       *theNodes = theGeometry->theNodes;
+    femMesh        *theEdges = theGeometry->theEdges;
+    double x[2],y[2],phi[2];
+    int iBnd,iElem,iInteg,iEdge,i,j,d,map[2],mapU[2], mapX[2], mapY[2];
+    int nLocal = 2;
+    double *B  = theSystem->B;
 
   for (iBnd = 0; iBnd < theProblem->nBoundaryConditions; iBnd++) {    
     femBoundaryCondition *theCondition = theProblem->conditions[iBnd];
@@ -106,8 +108,8 @@ void femElasticityAssembleNeumann(femProblem *theProblem) {
     double value = theCondition->value1;
     int *elem = theCondition->domain->elem;
     int nElem = theCondition->domain->nElem;
-
-    if(type == NEUMANN_X || type == NEUMANN_Y){
+        if(type == NEUMANN_X || type == NEUMANN_Y){
+        printf("nElem = %d\n", nElem);
         for (int e=0; e<nElem; e++) {
             for (int j=0; j<nLocal; j++) {
                 int node = theCondition->domain->mesh->elem[2*elem[e]+j];
@@ -116,6 +118,7 @@ void femElasticityAssembleNeumann(femProblem *theProblem) {
                     mapU[j] = 2*map[j];
                     x[j] = theNodes->X[map[j]];
                     y[j] = theNodes->Y[map[j]]; 
+                    
                 }
                 else if(type == NEUMANN_Y){
                     map[j] = node ;
@@ -124,19 +127,18 @@ void femElasticityAssembleNeumann(femProblem *theProblem) {
                     y[j] = theNodes->Y[map[j]]; 
                 }
             }
-            double jac = 0.0;
+            double jac = sqrt(pow(x[1]-x[0], 2) + pow(y[1]-y[0], 2))/2.0;
             for (iInteg=0; iInteg < theRule->n; iInteg++) {
                 double xsi = theRule->xsi[iInteg];
                 double weight = theRule->weight[iInteg];
                 femDiscretePhi(theSpace,xsi,phi);
-                jac = sqrt(pow(x[1]-x[0], 2) + pow(y[1]-y[0], 2))/2.0;
                 for (i = 0; i < nLocal; i++) {
                     B[mapU[i]] += phi[i] * value * jac * weight; 
                 }
             }
         }     
     } 
-    
+
     if(type == NEUMANN_N || type == NEUMANN_T){
         for (int e=0; e<nElem; e++) {
             for (int j=0; j<nLocal; j++) {
@@ -147,31 +149,31 @@ void femElasticityAssembleNeumann(femProblem *theProblem) {
                 x[j] = theNodes->X[map[j]];
                 y[j] = theNodes->Y[map[j]]; 
             }
-            double jac = 0.0;
+            double jac = sqrt(pow(x[1]-x[0], 2) + pow(y[1]-y[0], 2))/2.0;
             for (iInteg=0; iInteg < theRule->n; iInteg++) {
                 double xsi = theRule->xsi[iInteg];
                 double weight = theRule->weight[iInteg];
-                femDiscretePhi(theSpace,xsi,phi);
-                jac = sqrt(pow(x[1]-x[0], 2) + pow(y[1]-y[0], 2))/2.0;
+                femDiscretePhi(theSpace,xsi,phi); 
+
+                double tx = (theNodes->X[map[1]] - theNodes->X[map[0]]) / jac * 2; 
+                double ty = (theNodes->Y[map[1]] - theNodes->Y[map[0]]) / jac * 2;
+
                 for (i = 0; i < nLocal; i++) {
                     if(type == NEUMANN_T){
-                        double tx = (theNodes->X[map[1]] - theNodes->X[map[0]]) / jac * 2; 
-                        double ty = (theNodes->Y[map[1]] - theNodes->Y[map[0]]) / jac * 2;
-                        B[mapUx[i]] += phi[i] * value * weight * tx; 
-                        B[mapUy[i]] += phi[i] * value * weight * ty; 
+                        B[mapUx[i]] += phi[i] * value * jac * weight * tx; 
+                        B[mapUy[i]] += phi[i] * value * jac * weight * ty; 
                     }
                     else if(type == NEUMANN_N){
-                        double tx = (theNodes->X[map[1]] - theNodes->X[map[0]]) / jac * 2; 
-                        double ty = (theNodes->Y[map[1]] - theNodes->Y[map[0]]) / jac * 2;
                         double nx = ty;
                         double ny = -tx;
-                        B[mapUx[i]] += phi[i] * value * weight * nx; 
-                        B[mapUy[i]] += phi[i] * value * weight * ny; 
+                        B[mapUx[i]] += phi[i] * value * weight * jac * nx; 
+                        B[mapUy[i]] += phi[i] * value * weight * jac * ny; 
                     }
                 }
             }
         }     
     }         
+
   }
 }
 
@@ -187,7 +189,7 @@ void femElasticityApplyDirichlet(femProblem *theProblem) {
 
     if (type == DIRICHLET_X) {
       double value = theConstrainedNode->value1;
-      femFullSystemConstrain(theSystem, 2 * node, value);
+      femFullSystemConstrain(theSystem, 2 * node + 0, value);
     }
     if (type == DIRICHLET_Y) {
       double value = theConstrainedNode->value1;
@@ -196,7 +198,7 @@ void femElasticityApplyDirichlet(femProblem *theProblem) {
     if (type == DIRICHLET_XY) {
       double value_x = theConstrainedNode->value1;
       double value_y = theConstrainedNode->value2;
-      femFullSystemConstrain(theSystem, 2 * node, value_x);
+      femFullSystemConstrain(theSystem, 2 * node + 0, value_x);
       femFullSystemConstrain(theSystem, 2 * node + 1, value_y);
     }
 
@@ -234,10 +236,7 @@ double *femElasticitySolve(femProblem *theProblem) {
   femElasticityAssembleNeumann(theProblem);
   femElasticityApplyDirichlet(theProblem);
 
-  // Implémentation du solver CG (conjugate gradient) {fait} + CSR (compressed sparse row) {à implémenter}
-
-  // double* soluce = femFullSystemEliminate(theProblem->system);
-  double* soluce = cgSolver(theProblem->system);
+  double* soluce = femFullSystemEliminate(theProblem->system);
   memcpy(theProblem->soluce, soluce, theProblem->system->size * sizeof(double));
   return theProblem->soluce;
 }
