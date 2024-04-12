@@ -139,10 +139,7 @@ void geoSetDomainName(int iDomain, char *name);
 int geoGetDomain(char *name);
 void geoFinalize(void);
 void geoFree(void);
-Sparse_CSR dense_to_csr(double **A, size_t n_rows, size_t n_cols);
-int free_csr(Sparse_CSR* csr);
-int matrix_vector_sparse_csr(const Sparse_CSR* A_csr,const double* vec,double* res);
-double csr_matvec_product(const Sparse_CSR* A_csr, const double* vec, int row);
+
 
 
 femProblem *femElasticityCreate(femGeo *theGeometry, double E, double nu, double rho, double gx, double gy, femElasticCase iCase);
@@ -176,6 +173,10 @@ void femFullSystemPrint(femFullSystem *mySystem);
 void femFullSystemInit(femFullSystem *mySystem);
 void femFullSystemAlloc(femFullSystem *mySystem, int size);
 double *femFullSystemEliminate(femFullSystem *mySystem);
+Sparse_CSR dense_to_csr(double **A, size_t n_rows, size_t n_cols);
+int free_csr(Sparse_CSR* csr);
+int matrix_vector_sparse_csr(const Sparse_CSR* A_csr,const double* vec,double* res);
+double csr_matvec_product(const Sparse_CSR* A_csr, const double* vec, int row);
 double *cgSolver(femFullSystem *mySystem);
 void femFullSystemConstrain(femFullSystem *mySystem, int myNode, double value);
 
