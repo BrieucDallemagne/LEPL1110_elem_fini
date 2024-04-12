@@ -475,44 +475,62 @@ double *femFullSystemEliminate(femFullSystem *mySystem) {
   return (mySystem->B);
 }
 
-/*
+
 Sparse_CSR dense_to_csr(double **A, size_t n_rows, size_t n_cols) {
-    Sparse_CSR csr;
-    csr.n_rows = n_rows;
-    csr.n_cols = n_cols;
-    csr.n_nz = 0;
+  Sparse_CSR csr;
+  csr.n_rows = n_rows;
+  csr.n_cols = n_cols;
+  csr.n_nz = 0;
 
-    for (size_t i = 0; i < n_rows; i++) {
-        for (size_t j = 0; j < n_cols; j++) {
-            if (A[i][j] != 0) {
-                csr.n_nz++;
-            }
-        }
-    }
+  for (size_t i = 0; i < n_rows; i++) {
+      for (size_t j = 0; j < n_cols; j++) {
+          if (A[i][j] != 0) {
+              csr.n_nz++;
+          }
+      }
+  }
 
-    csr.values = (double *)malloc(csr.n_nz * sizeof(double));
-    csr.col_indices = (size_t *)malloc(csr.n_nz * sizeof(size_t));
-    csr.row_ptrs = (size_t *)calloc((n_rows + 1), sizeof(size_t));
+  csr.values = (double *)malloc(csr.n_nz * sizeof(double));
+  csr.col_indices = (size_t *)malloc(csr.n_nz * sizeof(size_t));
+  csr.row_ptrs = (size_t *)calloc((n_rows + 1), sizeof(size_t));
 
-    size_t nnz_index = 0;
-    for (size_t i = 0; i < n_rows; i++) {
-        for (size_t j = 0; j < n_cols; j++) {
-            if (A[i][j] != 0) {
-                csr.values[nnz_index] = A[i][j];
-                csr.col_indices[nnz_index] = j;
-                csr.row_ptrs[i+1]++;
-                nnz_index++;
-            }
-        }
-    }
-    
-    for (size_t i = 2; i <= n_rows; i++) {
-        csr.row_ptrs[i] += csr.row_ptrs[i-1];
-    }
+  size_t nnz_index = 0;
+  for (size_t i = 0; i < n_rows; i++) {
+      for (size_t j = 0; j < n_cols; j++) {
+          if (A[i][j] != 0) {
+              csr.values[nnz_index] = A[i][j];
+              csr.col_indices[nnz_index] = j;
+              csr.row_ptrs[i+1]++;
+              nnz_index++;
+          }
+      }
+  }
+  
+  for (size_t i = 2; i <= n_rows; i++) {
+      csr.row_ptrs[i] += csr.row_ptrs[i-1];
+  }
 
-    return csr;
+  return csr;
 }
-*/
+
+int free_csr(Sparse_CSR* csr) {
+    free(csr->values);
+    free(csr->col_indices);
+    free(csr->row_ptrs);
+    return EXIT_SUCCESS;
+}
+
+double csr_matvec_product(const Sparse_CSR* A_csr, const double* vec, int row) {
+    double res = 0.0;
+    size_t nz_start = A_csr->row_ptrs[row];
+    size_t nz_end = A_csr->row_ptrs[row+1];
+    for (size_t nz_id=nz_start; nz_id<nz_end; ++nz_id) {
+        size_t j = A_csr->col_indices[nz_id];
+        double val = A_csr->values[nz_id];
+        res += val * vec[j];
+    }
+    return res;
+}
 
 double dotProduct(double *v1, double *v2, int size) {
     double sum = 0;
@@ -523,65 +541,58 @@ double dotProduct(double *v1, double *v2, int size) {
 }
 
 double *cgSolver(femFullSystem *mySystem) {
-    int size = mySystem->size;
-    double *r = malloc(size * sizeof(double));
-    double *p = malloc(size * sizeof(double));
-    double *Ap = malloc(size * sizeof(double));
-    double *x = calloc(size, sizeof(double));
-    double r_dot_init, r_dot_new, alpha, beta;
+  int size = mySystem->size;
+  double *r = malloc(size * sizeof(double));
+  double *p = malloc(size * sizeof(double));
+  double *Ap = malloc(size * sizeof(double));
+  double *x = calloc(size, sizeof(double));
+  double r_dot_init, r_dot_new, alpha, beta;
 
-    // Sparse_CSR A_csr = dense_to_csr(mySystem->A, size, size);
+  Sparse_CSR A_csr = dense_to_csr(mySystem->A, size, size);
+
+  for (int i = 0; i < size; i++) {
+    double sum = csr_matvec_product(&A_csr, x, i);
+    r[i] = mySystem->B[i] - sum;
+    p[i] = r[i];
+  }
+
+  int k = 0;
+  r_dot_init = dotProduct(r, r, size);
+
+  while (k < size) {
+    for (int i = 0; i < size; i++) {
+      Ap[i] = csr_matvec_product(&A_csr, p, i);
+    }
+
+    alpha = r_dot_init / dotProduct(p, Ap, size);
 
     for (int i = 0; i < size; i++) {
-        double sum = 0;
-        for(int j = 0; j < size; j++) {
-            sum += mySystem->A[i][j] * x[j];
-        }
-        r[i] = mySystem->B[i] - sum;
-        p[i] = r[i];
-
+      x[i] += alpha * p[i];
+      r[i] -= alpha * Ap[i];
     }
 
-    int k = 0;
-    r_dot_init = dotProduct(r, r, size);
+    r_dot_new = dotProduct(r, r, size);
 
-    while (k < size) {
-        for (int i = 0; i < size; i++) {
-            double sum = 0;
-            for (int j = 0; j < size; j++) {
-                sum += mySystem->A[i][j] * p[j];
-            }
-            Ap[i] = sum;
-        }
-
-        alpha = r_dot_init / dotProduct(p, Ap, size);
-
-        for (int i = 0; i < size; i++) {
-            x[i] += alpha * p[i];
-            r[i] -= alpha * Ap[i];
-        }
-
-        r_dot_new = dotProduct(r, r, size);
-
-        if (sqrt(r_dot_new) < 1e-10) {
-            break;
-        }
-
-        beta = r_dot_new / r_dot_init;
-
-        for (int i = 0; i < size; i++) {
-            p[i] = r[i] + beta * p[i];
-        }
-
-        r_dot_init = r_dot_new;
-        k++;
+    if (sqrt(r_dot_new) < 1e-10) {
+      break;
     }
 
-    free(r);
-    free(p);
-    free(Ap);
+    beta = r_dot_new / r_dot_init;
 
-    return (x);
+    for (int i = 0; i < size; i++) {
+      p[i] = r[i] + beta * p[i];
+    }
+
+    r_dot_init = r_dot_new;
+    k++;
+  }
+
+  free(r);
+  free(p);
+  free(Ap);
+  free_csr(&A_csr);
+
+  return (x);
 }
 
 
