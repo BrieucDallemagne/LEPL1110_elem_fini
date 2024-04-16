@@ -615,6 +615,30 @@ void femFullSystemConstrain(femFullSystem *mySystem, int myNode, double myValue)
   A[myNode][myNode] = 1;
   B[myNode] = myValue;
 }
+void femFullSystemConstrain_but_different(femFullSystem *mySystem, int myNode, double myValue, double tx, double ty){
+  double **A  = mySystem->A;
+  double *B  = mySystem->B;
+  int size = mySystem->size;
+  double **Abis = (double **)malloc(size * sizeof(double *));
+  int map, mapX, mapY;
+
+  for(int i = 0; i < size; i++) {
+      Abis[i] = (double *)malloc(size * sizeof(double));
+      for(int j = 0; j < size; j++) {
+          Abis[i][j] = 0; // ou toute autre valeur d'initialisation
+      }
+  }
+
+  map = myNode;
+  mapX = 2*myNode;
+  mapY = 2*myNode + 1;
+  double nx = ty;
+  double ny = -tx;
+
+  
+  //double l_xp = tx * (tx*) 
+
+}
 
 femProblem *femElasticityCreate(femGeo *theGeometry, double E, double nu, double rho, double gx, double gy, femElasticCase iCase) {
   femProblem *theProblem = malloc(sizeof(femProblem));

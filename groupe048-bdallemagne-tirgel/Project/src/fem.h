@@ -142,6 +142,7 @@ void geoFree(void);
 
 
 
+
 femProblem *femElasticityCreate(femGeo *theGeometry, double E, double nu, double rho, double gx, double gy, femElasticCase iCase);
 void femElasticityFree(femProblem *theProblem);
 void femElasticityPrint(femProblem *theProblem);
@@ -179,6 +180,7 @@ int matrix_vector_sparse_csr(const Sparse_CSR* A_csr,const double* vec,double* r
 double csr_matvec_product(const Sparse_CSR* A_csr, const double* vec, int row);
 double *cgSolver(femFullSystem *mySystem);
 void femFullSystemConstrain(femFullSystem *mySystem, int myNode, double value);
+void femFullSystemConstrain_but_different(femFullSystem *mySystem, int myNode, double myValue, double tx, double ty);
 
 double femMin(double *x, int n);
 double femMax(double *x, int n);

@@ -204,8 +204,8 @@ void femElasticityApplyDirichlet(femProblem *theProblem) {
       double value = theConstrainedNode->value1;
       double nx = theConstrainedNode->nx;
       double ny = theConstrainedNode->ny;
-      femFullSystemConstrain(theSystem, 2 * node, value * nx);
-      femFullSystemConstrain(theSystem, 2 * node + 1, value * ny);
+      // femFullSystemConstrain(theSystem, 2 * node, value * nx);
+      // femFullSystemConstrain(theSystem, 2 * node + 1, value * ny);
     }
     if (type == DIRICHLET_T) {
       double value = theConstrainedNode->value1;
@@ -213,8 +213,8 @@ void femElasticityApplyDirichlet(femProblem *theProblem) {
       double ny = theConstrainedNode->ny;
       double tx = -ny;
       double ty = nx;
-      femFullSystemConstrain(theSystem, 2 * node, value * tx);
-      femFullSystemConstrain(theSystem, 2 * node + 1, value * ty);
+      // femFullSystemConstrain(theSystem, 2 * node, value * tx);
+      // femFullSystemConstrain(theSystem, 2 * node + 1, value * ty);
     }
     if (type == DIRICHLET_NT) {
       double value_n = theConstrainedNode->value1;
@@ -223,8 +223,10 @@ void femElasticityApplyDirichlet(femProblem *theProblem) {
       double ny = theConstrainedNode->ny;
       double tx = -ny;
       double ty = nx;
-      femFullSystemConstrain(theSystem, 2 * node, value_n * nx + value_t * tx);
-      femFullSystemConstrain(theSystem, 2 * node + 1, value_n * ny + value_t * ty);
+
+
+      // femFullSystemConstrain(theSystem, 2 * node, value_n * nx + value_t * tx);
+      // femFullSystemConstrain(theSystem, 2 * node + 1, value_n * ny + value_t * ty);
     }
   }
 }
