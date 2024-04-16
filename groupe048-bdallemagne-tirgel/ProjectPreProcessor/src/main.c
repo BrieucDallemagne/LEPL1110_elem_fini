@@ -54,8 +54,8 @@ int main(void) {
 
 
   geoMeshWrite("../data/mesh.txt");
-  geoMeshWrite("/element_fini/LEPL1110_elem_fini/groupe048-bdallemagne-tirgel/Project/data/mesh.txt");
-  geoMeshWrite("/element_fini/LEPL1110_elem_fini/groupe048-bdallemagne-tirgel/ProjectPostProcessor/data/mesh.txt");
+  geoMeshWrite("../../Project/data/mesh.txt");
+  geoMeshWrite("../../ProjectPostProcessor/data/mesh.txt");
   
 
   //
@@ -84,9 +84,10 @@ int main(void) {
   // femElasticityAddBoundaryCondition(theProblem, "Small rectangle top", DIRICHLET_XY, 0.0, 0.0);
   // femElasticityAddBoundaryCondition(theProblem, "Small rectangle right", DIRICHLET_XY, 0.0, 0.0);
   // femElasticityAddBoundaryCondition(theProblem, "Rectangle top", DIRICHLET_XY, 0.0, 0.0);
-  femElasticityAddBoundaryCondition(theProblem, "Leaning rectangle left", NEUMANN_N, -5e6, NAN);
-  //femElasticityAddBoundaryCondition(theProblem, "Rectangle top", NEUMANN_Y, -1.5e8, NAN);
-  femElasticityAddBoundaryCondition(theProblem, "Arc 4", NEUMANN_Y, -1e6, NAN);
+  // femElasticityAddBoundaryCondition(theProblem, "Leaning rectangle left", NEUMANN_X, -5e6, NAN);
+  // femElasticityAddBoundaryCondition(theProblem, "Rectangle top", NEUMANN_Y, -1.5e8, NAN);
+  femElasticityAddBoundaryCondition(theProblem, "Leaning rectangle left", NEUMANN_Y, -2.5e7, NAN);
+  femElasticityAddBoundaryCondition(theProblem, "Arc 4", NEUMANN_Y, -1e7, NAN);
   
   femElasticityPrint(theProblem);
   femElasticityWrite(theProblem, "../data/problem.txt");
