@@ -635,9 +635,6 @@ void femFullSystemConstrain_but_different(femFullSystem *mySystem, int myNode, d
   double nx = ty;
   double ny = -tx;
 
-  
-  //double l_xp = tx * (tx*) 
-
 }
 
 femProblem *femElasticityCreate(femGeo *theGeometry, double E, double nu, double rho, double gx, double gy, femElasticCase iCase) {
