@@ -180,7 +180,8 @@ int matrix_vector_sparse_csr(const Sparse_CSR* A_csr,const double* vec,double* r
 double csr_matvec_product(const Sparse_CSR* A_csr, const double* vec, int row);
 double *cgSolver(femFullSystem *mySystem);
 void femFullSystemConstrain(femFullSystem *mySystem, int myNode, double value);
-void femFullSystemConstrain_but_different(femFullSystem *mySystem, int myNode, double myValue, double tx, double ty);
+void femFullSystemConstrainN(femFullSystem *mySystem, int myNode, double myValue, double tx, double ty);
+void femFullSystemConstrainT(femFullSystem *mySystem, int myNode, double myValue, double tx, double ty);
 
 double femMin(double *x, int n);
 double femMax(double *x, int n);

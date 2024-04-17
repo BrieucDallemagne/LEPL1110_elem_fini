@@ -133,8 +133,13 @@ void femElasticityAssembleNeumann(femProblem *theProblem) {
                 double xsi = theRule->xsi[iInteg];
                 double weight = theRule->weight[iInteg];
                 femDiscretePhi(theSpace,xsi,phi);
+                for(int i=0; i<nLocal; i++) r += x[i]*phi[i];
                 for (i = 0; i < theSpace->n; i++) {
+                  if (type == AXISYM){
+                    B[mapU[i]] += phi[i] * value * r * jac * weight;
+                  }else{
                     B[mapU[i]] += phi[i] * value * jac * weight; 
+                  }
                 }
             }
         }     
@@ -151,7 +156,7 @@ void femElasticityAssembleNeumann(femProblem *theProblem) {
                   y[j] = theNodes->Y[map[j]]; 
               }
               double jac = sqrt(pow(x[1]-x[0], 2) + pow(y[1]-y[0], 2))/2.0;
-
+              double r = 0.0;
               for (iInteg=0; iInteg < theRule->n; iInteg++) {
                   
                   double xsi = theRule->xsi[iInteg];
@@ -161,18 +166,29 @@ void femElasticityAssembleNeumann(femProblem *theProblem) {
                   double tx = (theNodes->X[map[1]] - theNodes->X[map[0]]) / jac; 
                   double ty = (theNodes->Y[map[1]] - theNodes->Y[map[0]]) / jac;
 
-                  for(int i=0; i<nLocal; i++) r += x[i]*phi[i];
+                  for(int i=0; i<theSpace->n; i++) r += x[i]*phi[i];
 
                   for (i = 0; i < nLocal; i++) {
                       if(type == NEUMANN_T){
+                        if(AXISYM){
+                          B[mapUx[i]] += phi[i] * value * jac * weight * tx * r; 
+                          B[mapUy[i]] += phi[i] * value * jac * weight * ty * r; 
+                        }else{
                           B[mapUx[i]] += phi[i] * value * jac * weight * tx; 
                           B[mapUy[i]] += phi[i] * value * jac * weight * ty; 
+                        }
                       }
                       else if(type == NEUMANN_N){
                           double nx = ty;
                           double ny = -tx;
-                          B[mapUx[i]] += phi[i] * value * weight * jac * nx; 
-                          B[mapUy[i]] += phi[i] * value * weight * jac * ny; 
+                          if(type == AXISYM){
+                            B[mapUx[i]] += phi[i] * value * weight * jac * nx * r; 
+                            B[mapUy[i]] += phi[i] * value * weight * jac * ny * r; 
+                          }else{
+                            B[mapUx[i]] += phi[i] * value * weight * jac * nx; 
+                            B[mapUy[i]] += phi[i] * value * weight * jac * ny; 
+                          }
+                          
                       }
                   }
               }
@@ -211,29 +227,21 @@ void femElasticityApplyDirichlet(femProblem *theProblem) {
       double value = theConstrainedNode->value1;
       double nx = theConstrainedNode->nx;
       double ny = theConstrainedNode->ny;
-      // femFullSystemConstrain(theSystem, 2 * node, value * nx);
-      // femFullSystemConstrain(theSystem, 2 * node + 1, value * ny);
+      femFullSystemConstrainN(theSystem, node, value, nx, ny);
     }
     if (type == DIRICHLET_T) {
       double value = theConstrainedNode->value1;
       double nx = theConstrainedNode->nx;
       double ny = theConstrainedNode->ny;
-      double tx = -ny;
-      double ty = nx;
-      // femFullSystemConstrain(theSystem, 2 * node, value * tx);
-      // femFullSystemConstrain(theSystem, 2 * node + 1, value * ty);
+      femFullSystemConstrainT(theSystem, node, value, nx, ny);
     }
     if (type == DIRICHLET_NT) {
       double value_n = theConstrainedNode->value1;
       double value_t = theConstrainedNode->value2;
       double nx = theConstrainedNode->nx;
       double ny = theConstrainedNode->ny;
-      double tx = -ny;
-      double ty = nx;
-
-
-      // femFullSystemConstrain(theSystem, 2 * node, value_n * nx + value_t * tx);
-      // femFullSystemConstrain(theSystem, 2 * node + 1, value_n * ny + value_t * ty);
+      femFullSystemConstrainN(theSystem, node, value_n, nx, ny);
+      femFullSystemConstrainT(theSystem, node, value_t, nx, ny);
     }
   }
 }

@@ -615,19 +615,58 @@ void femFullSystemConstrain(femFullSystem *mySystem, int myNode, double myValue)
   A[myNode][myNode] = 1;
   B[myNode] = myValue;
 }
-void femFullSystemConstrain_but_different(femFullSystem *mySystem, int myNode, double myValue, double tx, double ty){
+
+void femFullSystemConstrainN(femFullSystem *mySystem, int myNode, double myValue, double nx, double ny){
   double **A  = mySystem->A;
   double *B  = mySystem->B;
   int size = mySystem->size;
   double **Abis = (double **)malloc(size * sizeof(double *));
   int map, mapX, mapY;
 
-  for(int i = 0; i < size; i++) {
-      Abis[i] = (double *)malloc(size * sizeof(double));
-      for(int j = 0; j < size; j++) {
-          Abis[i][j] = 0; // ou toute autre valeur d'initialisation
-      }
+  map = myNode;
+  mapX = 2*myNode;
+  mapY = 2*myNode + 1;
+  double tx = -ny;
+  double ty = nx;
+
+  double a_xx = A[mapX][mapX];
+  double a_xy = A[mapX][mapY];
+  double a_yx = A[mapY][mapX];
+  double a_yy = A[mapY][mapY];
+  double b_x = B[mapX];
+  double b_y = B[mapY];
+
+  double a_tt = tx*(tx*a_xx + ty*a_yx) + ty*(tx*a_xy + ty*a_yy);
+  double a_tn = nx*(tx*a_xx + ty*a_yx) + ny*(tx*a_xy + ty*a_yy);
+  double b_t = tx*b_x + ty*b_y; 
+
+  A[mapX][mapX] = pow(nx,2)* + a_tt * pow(tx, 2);
+  A[mapX][mapY] = nx*ny + a_tt * tx*ty;
+  A[mapY][mapX] = nx*ny + a_tt * tx*ty;
+  A[mapY][mapY] = pow(ny,2) + a_tt * pow(ty, 2);
+
+  B[mapX] = nx*myValue + tx*(b_t - myValue*a_tn);
+  B[mapY] = ny*myValue + ty*(b_t - myValue*a_tn);
+
+  for(int i = 0; i < size; i++){
+    if (i == mapX || i == mapY){
+      continue;
+    }else{
+      A[mapX][i] = tx*(tx*A[mapX][i] + ty*A[mapY][i]); //lx
+      A[mapY][i] = ty*(tx*A[mapX][i] + ty*A[mapY][i]); //ly
+      A[i][mapX] = tx*(tx*A[i][mapX] + ty*A[i][mapY]); //cx
+      A[i][mapY] = ty*(tx*A[i][mapX] + ty*A[i][mapY]); //cy
+      B[i] = B[i] - myValue*(nx*A[i][mapX] + ny*A[i][mapY]); //b
+    }
   }
+}
+
+void femFullSystemConstrainT(femFullSystem *mySystem, int myNode, double myValue, double tx, double ty){
+  double **A  = mySystem->A;
+  double *B  = mySystem->B;
+  int size = mySystem->size;
+  double **Abis = (double **)malloc(size * sizeof(double *));
+  int map, mapX, mapY;
 
   map = myNode;
   mapX = 2*myNode;
@@ -635,6 +674,36 @@ void femFullSystemConstrain_but_different(femFullSystem *mySystem, int myNode, d
   double nx = ty;
   double ny = -tx;
 
+  double a_xx = A[mapX][mapX];
+  double a_xy = A[mapX][mapY];
+  double a_yx = A[mapY][mapX];
+  double a_yy = A[mapY][mapY];
+  double b_x = B[mapX];
+  double b_y = B[mapY];
+
+  double a_tt = tx*(tx*a_xx + ty*a_yx) + ty*(tx*a_xy + ty*a_yy);
+  double a_tn = nx*(tx*a_xx + ty*a_yx) + ny*(tx*a_xy + ty*a_yy);
+  double b_t = tx*b_x + ty*b_y; 
+
+  A[mapX][mapX] = pow(nx,2)* + a_tt * pow(tx, 2);
+  A[mapX][mapY] = nx*ny + a_tt * tx*ty;
+  A[mapY][mapX] = nx*ny + a_tt * tx*ty;
+  A[mapY][mapY] = pow(ny,2) + a_tt * pow(ty, 2);
+
+  B[mapX] = nx*myValue + tx*(b_t - myValue*a_tn);
+  B[mapY] = ny*myValue + ty*(b_t - myValue*a_tn);
+
+  for(int i = 0; i < size; i++){
+    if (i == mapX || i == mapY){
+      continue;
+    }else{
+      A[mapX][i] = tx*(tx*A[mapX][i] + ty*A[mapY][i]); //lx
+      A[mapY][i] = ty*(tx*A[mapX][i] + ty*A[mapY][i]); //ly
+      A[i][mapX] = tx*(tx*A[i][mapX] + ty*A[i][mapY]); //cx
+      A[i][mapY] = ty*(tx*A[i][mapX] + ty*A[i][mapY]); //cy
+      B[i] = B[i] - myValue*(nx*A[i][mapX] + ny*A[i][mapY]); //b
+    }
+  }
 }
 
 femProblem *femElasticityCreate(femGeo *theGeometry, double E, double nu, double rho, double gx, double gy, femElasticCase iCase) {
