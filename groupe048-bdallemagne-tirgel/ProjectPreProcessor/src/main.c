@@ -35,7 +35,7 @@ int main(void) {
   // OPTION 4 : Lecture d'un fichier .msh
   // geoMeshGenerateMshFile("../data/mesh.msh");
 
-
+  
   geoMeshImport();
   geoSetDomainName(0, "Rectangle left");
   geoSetDomainName(1, "Rectangle bottom");
@@ -51,13 +51,12 @@ int main(void) {
   geoSetDomainName(11, "Leaning rectangle left");
   geoSetDomainName(12, "Leaning rectangle bottom");
   geoSetDomainName(13, "Leaning rectangle right");
-
+  
 
   geoMeshWrite("../data/mesh.txt");
   geoMeshWrite("../../Project/data/mesh.txt");
   geoMeshWrite("../../ProjectPostProcessor/data/mesh.txt");
   
-
   //
   //  -2- Definition du probleme
   //
@@ -83,7 +82,7 @@ int main(void) {
   // femElasticityAddBoundaryCondition(theProblem, "Arc 2", DIRICHLET_XY, 0.0, 0.0);
   // femElasticityAddBoundaryCondition(theProblem, "Small rectangle top", DIRICHLET_XY, 0.0, 0.0);
   // femElasticityAddBoundaryCondition(theProblem, "Small rectangle right", DIRICHLET_XY, 0.0, 0.0);
-  // femElasticityAddBoundaryCondition(theProblem, "Rectangle top", DIRICHLET_XY, 0.0, 0.0);
+  femElasticityAddBoundaryCondition(theProblem, "Rectangle top", DIRICHLET_XY, 0.0, 0.0);
   // femElasticityAddBoundaryCondition(theProblem, "Leaning rectangle left", NEUMANN_X, -5e6, NAN);
   // femElasticityAddBoundaryCondition(theProblem, "Rectangle top", NEUMANN_Y, -1.5e8, NAN);
   // femElasticityAddBoundaryCondition(theProblem, "Leaning rectangle left", NEUMANN_Y, -2.5e7, NAN);
