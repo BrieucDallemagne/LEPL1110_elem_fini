@@ -60,8 +60,8 @@ int main(void) {
   //  -2- Definition du probleme
   //
 
-  double E = 600.e6;
-  double nu = 0.425;
+  double E = 680e6;
+  double nu = 0.4;
   double rho = 930;
   double gx = 0;
   double gy = -9.81;
@@ -73,7 +73,9 @@ int main(void) {
   femElasticityAddBoundaryCondition(theProblem, "Rectangle right", DIRICHLET_X, 0.0, NAN);
   femElasticityAddBoundaryCondition(theProblem, "Ladder bottom", DIRICHLET_XY, 0.0, 0.0);
   femElasticityAddBoundaryCondition(theProblem, "Small rectangle bottom", DIRICHLET_XY, 0.0, 0.0);
-  femElasticityAddBoundaryCondition(theProblem, "Slope top", NEUMANN_Y, -1e6, NAN);
+  // femElasticityAddBoundaryCondition(theProblem, "Slope top", NEUMANN_Y, -100*9.81, NAN);
+  femElasticityAddBoundaryCondition(theProblem, "Slide top", NEUMANN_Y, -100*9.81, NAN);
+  // femElasticityAddBoundaryCondition(theProblem, "Small rectangle top", NEUMANN_Y, -10000000*9.81, NAN);
 
   femElasticityPrint(theProblem);
   femElasticityWrite(theProblem, "../data/problem.txt");
