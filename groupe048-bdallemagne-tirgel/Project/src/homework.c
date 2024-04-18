@@ -37,6 +37,7 @@ void femElasticityAssembleElements(femProblem *theProblem) {
     }
 
     for (iInteg = 0; iInteg < theRule->n; iInteg++) {
+      r = 0.0;
       double xsi = theRule->xsi[iInteg];
       double eta = theRule->eta[iInteg];
       double weight = theRule->weight[iInteg];
@@ -64,7 +65,7 @@ void femElasticityAssembleElements(femProblem *theProblem) {
       }
       for (i = 0; i < theSpace->n; i++) {
         for (j = 0; j < theSpace->n; j++) {
-          if (theProblem->planarStrainStress = AXISYM){
+          if (theProblem->planarStrainStress == AXISYM){
              A[mapX[i]][mapX[j]] += (dphidx[i] * a * dphidx[j] * r + dphidy[i] * c * dphidy[j] * r + dphidx[i] * b * phi[j] + phi[i] * (b * dphidx[j] + a * phi[j]/r)) * jac * weight;
              A[mapX[i]][mapY[j]] += (dphidx[i] * b * dphidy[j] * r + dphidy[i] * c * dphidx[j] * r + phi[i] * b * dphidy[j]) * jac * weight;
              A[mapY[i]][mapX[j]] += (dphidy[i] * b * dphidx[j] * r + dphidx[i] * c * dphidy[j] * r + dphidy[i] * b * phi[j]) * jac * weight;
@@ -78,7 +79,7 @@ void femElasticityAssembleElements(femProblem *theProblem) {
         }
       }
       for (i = 0; i < theSpace->n; i++) {
-        if (theProblem->planarStrainStress = AXISYM){
+        if (theProblem->planarStrainStress == AXISYM){
           B[mapX[i]] += phi[i] * gx * rho * r * jac * weight;
           B[mapY[i]] += phi[i] * gy * rho * r * jac * weight;
         }else{
