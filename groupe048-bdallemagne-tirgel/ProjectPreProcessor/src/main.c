@@ -60,9 +60,9 @@ int main(void) {
   //  -2- Definition du probleme
   //
 
-  double E = 211.e9;
-  double nu = 0.3;
-  double rho = 7.85e3;
+  double E = 600.e6;
+  double nu = 0.425;
+  double rho = 930;
   double gx = 0;
   double gy = -9.81;
 
