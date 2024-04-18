@@ -681,27 +681,27 @@ void femFullSystemConstrainT(femFullSystem *mySystem, int myNode, double myValue
   double b_x = B[mapX];
   double b_y = B[mapY];
 
-  double a_tt = tx*(tx*a_xx + ty*a_yx) + ty*(tx*a_xy + ty*a_yy);
-  double a_tn = nx*(tx*a_xx + ty*a_yx) + ny*(tx*a_xy + ty*a_yy);
-  double b_t = tx*b_x + ty*b_y; 
+  double a_nn = nx*(nx*a_xx + ny*a_yx) + ny*(nx*a_xy + ny*a_yy);
+  double a_tn = tx*(nx*a_xx + ny*a_yx) + ty*(nx*a_xy + ny*a_yy);
+  double b_t = nx*b_x + ny*b_y; 
 
-  A[mapX][mapX] = pow(nx,2)* + a_tt * pow(tx, 2);
-  A[mapX][mapY] = nx*ny + a_tt * tx*ty;
-  A[mapY][mapX] = nx*ny + a_tt * tx*ty;
-  A[mapY][mapY] = pow(ny,2) + a_tt * pow(ty, 2);
+  A[mapX][mapX] = pow(tx,2)* + a_nn * pow(nx, 2);
+  A[mapX][mapY] = tx*ty + a_nn * nx*ny;
+  A[mapY][mapX] = tx*ty + a_nn * nx*ny;
+  A[mapY][mapY] = pow(ty,2) + a_nn * pow(ny, 2);
 
-  B[mapX] = nx*myValue + tx*(b_t - myValue*a_tn);
-  B[mapY] = ny*myValue + ty*(b_t - myValue*a_tn);
+  B[mapX] = tx*myValue + nx*(b_t - myValue*a_tn);
+  B[mapY] = ty*myValue + ny*(b_t - myValue*a_tn);
 
   for(int i = 0; i < size; i++){
     if (i == mapX || i == mapY){
       continue;
     }else{
-      A[mapX][i] = tx*(tx*A[mapX][i] + ty*A[mapY][i]); //lx
-      A[mapY][i] = ty*(tx*A[mapX][i] + ty*A[mapY][i]); //ly
-      A[i][mapX] = tx*(tx*A[i][mapX] + ty*A[i][mapY]); //cx
-      A[i][mapY] = ty*(tx*A[i][mapX] + ty*A[i][mapY]); //cy
-      B[i] = B[i] - myValue*(nx*A[i][mapX] + ny*A[i][mapY]); //b
+      A[mapX][i] = nx*(nx*A[mapX][i] + ny*A[mapY][i]); //lx
+      A[mapY][i] = ny*(nx*A[mapX][i] + ny*A[mapY][i]); //ly
+      A[i][mapX] = nx*(nx*A[i][mapX] + ny*A[i][mapY]); //cx
+      A[i][mapY] = ny*(nx*A[i][mapX] + ny*A[i][mapY]); //cy
+      B[i] = B[i] - myValue*(tx*A[i][mapX] + ty*A[i][mapY]); //b
     }
   }
 }
