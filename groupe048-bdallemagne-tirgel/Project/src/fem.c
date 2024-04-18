@@ -656,7 +656,7 @@ void femFullSystemConstrainN(femFullSystem *mySystem, int myNode, double myValue
       A[mapY][i] = ty*(tx*A[mapX][i] + ty*A[mapY][i]); //ly
       A[i][mapX] = tx*(tx*A[i][mapX] + ty*A[i][mapY]); //cx
       A[i][mapY] = ty*(tx*A[i][mapX] + ty*A[i][mapY]); //cy
-      B[i] = B[i] - myValue*(nx*A[i][mapX] + ny*A[i][mapY]); //b
+      B[i] -= myValue*(nx*A[i][mapX] + ny*A[i][mapY]); //b
     }
   }
 }
