@@ -113,81 +113,87 @@ void femElasticityAssembleNeumann(femProblem *theProblem) {
 
       if(type == NEUMANN_X || type == NEUMANN_Y){
         for (int e=0; e<nElem; e++) {
-            for (int j=0; j<nLocal; j++) {
-                int node = theCondition->domain->mesh->elem[nLocal*elem[e]+j];
-                map[j] = node;
-                if(type == NEUMANN_X){
-                    mapU[j] = 2*map[j];
-                }
-                else if(type == NEUMANN_Y){
-                    mapU[j] = 2 * map[j] + 1;
-                }
-                x[j] = theNodes->X[map[j]];
-                y[j] = theNodes->Y[map[j]]; 
+          for (int j=0; j<nLocal; j++) {
+            int node = theCondition->domain->mesh->elem[nLocal*elem[e]+j];
+            map[j] = node;
+            if(type == NEUMANN_X){
+                mapU[j] = 2*map[j];
             }
-            double jac = sqrt(pow(x[1]-x[0], 2) + pow(y[1]-y[0], 2))/2.0;
-            for (iInteg=0; iInteg < theRule->n; iInteg++) {
-              double r = 0.0; 
-              for(int i=0; i<theSpace->n; i++) r += x[i]*phi[i];
-              double xsi = theRule->xsi[iInteg];
-              double weight = theRule->weight[iInteg];
-              femDiscretePhi(theSpace,xsi,phi);
+            else if(type == NEUMANN_Y){
+                mapU[j] = 2 * map[j] + 1;
+            }
+            x[j] = theNodes->X[map[j]];
+            y[j] = theNodes->Y[map[j]]; 
+          }
+          double jac = sqrt(pow(x[1]-x[0], 2) + pow(y[1]-y[0], 2))/2.0;
+          for (iInteg=0; iInteg < theRule->n; iInteg++) {
+            double r = 0.0; 
+            for(int i=0; i<theSpace->n; i++) r += x[i]*phi[i];
+            double xsi = theRule->xsi[iInteg];
+            double weight = theRule->weight[iInteg];
+            femDiscretePhi(theSpace,xsi,phi);
+            if (type == AXISYM){
               for (i = 0; i < theSpace->n; i++) {
-                if (type == AXISYM){
-                  B[mapU[i]] += phi[i] * value * r * jac * weight;
-                }else{
-                  B[mapU[i]] += phi[i] * value * jac * weight; 
-                }
+                B[mapU[i]] += phi[i] * value * r * jac * weight;
+              }
+            }else{
+              for (i = 0; i < theSpace->n; i++) {
+                B[mapU[i]] += phi[i] * value * jac * weight;
               }
             }
+          }
         }     
       } 
-
       if(type == NEUMANN_N || type == NEUMANN_T){
           for (int e=0; e<nElem; e++) {
               for (int j=0; j<nLocal; j++) {
-                  int node = theCondition->domain->mesh->elem[nLocal*elem[e]+j];
-                  map[j] = node;
-                  mapUx[j] = 2*map[j];           
-                  mapUy[j] = 2 * map[j] + 1;
-                  x[j] = theNodes->X[map[j]];
-                  y[j] = theNodes->Y[map[j]]; 
+                int node = theCondition->domain->mesh->elem[nLocal*elem[e]+j];
+                map[j] = node;
+                mapUx[j] = 2*map[j];           
+                mapUy[j] = 2 * map[j] + 1;
+                x[j] = theNodes->X[map[j]];
+                y[j] = theNodes->Y[map[j]]; 
               }
-              double jac = sqrt(pow(x[1]-x[0], 2) + pow(y[1]-y[0], 2))/2.0;
+              double h = sqrt(pow(x[1]-x[0], 2) + pow(y[1]-y[0], 2));
+              double jac = h/2.0;
               
               for (iInteg=0; iInteg < theRule->n; iInteg++) {
                   r = 0.0;
+                  for(int i=0; i<theSpace->n; i++) r += x[i]*phi[i];
                   double xsi = theRule->xsi[iInteg];
                   double weight = theRule->weight[iInteg];
                   femDiscretePhi(theSpace,xsi,phi); 
 
-                  double tx = (theNodes->X[map[1]] - theNodes->X[map[0]])/ jac; 
-                  double ty = (theNodes->Y[map[1]] - theNodes->Y[map[0]])/ jac;
-
-                  for(int i=0; i<theSpace->n; i++) r += x[i]*phi[i];
-
-                  for (i = 0; i < theSpace->n; i++) {
-                      if(type == NEUMANN_T){
-                        if(type == AXISYM){
-                          B[mapUx[i]] += phi[i] * value * jac * weight * tx * r; 
-                          B[mapUy[i]] += phi[i] * value * jac * weight * ty * r; 
-                        }else{
-                          B[mapUx[i]] += phi[i] * value * jac * weight * tx; 
-                          B[mapUy[i]] += phi[i] * value * jac * weight * ty; 
-                        }
+                  double tx = x[1] - x[0]; 
+                  double ty = y[1] - y[0];
+ 
+                  if(type == NEUMANN_T){
+                    if(type == AXISYM){
+                      for (i = 0; i < theSpace->n; i++) {
+                        B[mapUx[i]] += phi[i] * value * jac * weight * tx * r; 
+                        B[mapUy[i]] += phi[i] * value * jac * weight * ty * r; 
+                      }  
+                    }else{
+                      for (i = 0; i < theSpace->n; i++) {
+                        B[mapUx[i]] += phi[i] * value * jac * weight * tx; 
+                        B[mapUy[i]] += phi[i] * value * jac * weight * ty; 
                       }
-                      else if(type == NEUMANN_N){
-                          double nx = ty;
-                          double ny = -tx;
-                          if(type == AXISYM){
-                            B[mapUx[i]] += phi[i] * value * weight * jac * nx * r; 
-                            B[mapUy[i]] += phi[i] * value * weight * jac * ny * r; 
-                          }else{
-                            B[mapUx[i]] += phi[i] * value * weight * jac * nx; 
-                            B[mapUy[i]] += phi[i] * value * weight * jac * ny; 
-                          }
-                          
+                    }
+                  }
+                  if(type == NEUMANN_N){
+                    double nx = ty/h;
+                    double ny = -tx/h;
+                    if(type == AXISYM){
+                      for (i = 0; i < theSpace->n; i++) {
+                        B[mapUx[i]] += phi[i] * value * weight * jac * nx * r; 
+                        B[mapUy[i]] += phi[i] * value * weight * jac * ny * r; 
                       }
+                    }else{
+                      for (i = 0; i < theSpace->n; i++) {
+                        B[mapUx[i]] += phi[i] * value * weight * jac * nx; 
+                        B[mapUy[i]] += phi[i] * value * weight * jac * ny;
+                      }
+                    }
                   }
               }
           }     
