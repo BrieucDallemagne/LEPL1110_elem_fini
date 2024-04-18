@@ -246,7 +246,7 @@ void femElasticityApplyDirichlet(femProblem *theProblem) {
       // femFullSystemConstrainT(theSystem, node, value_t, nx, ny);
       femFullSystemConstrain(theSystem, 2 * node + 0, value_n * nx + value_t * tx);
       femFullSystemConstrain(theSystem, 2 * node + 1, value_n * ny + value_t * ty);
-
+      
     }
   }
 }
