@@ -154,8 +154,12 @@ void femElasticityAssembleNeumann(femProblem *theProblem) {
                 x[j] = theNodes->X[map[j]];
                 y[j] = theNodes->Y[map[j]]; 
               }
+              
               double h = sqrt(pow(x[1]-x[0], 2) + pow(y[1]-y[0], 2));
               double jac = h/2.0;
+
+              double tx = x[1] - x[0]; 
+              double ty = y[1] - y[0];
               
               for (iInteg=0; iInteg < theRule->n; iInteg++) {
                   r = 0.0;
@@ -163,9 +167,6 @@ void femElasticityAssembleNeumann(femProblem *theProblem) {
                   double xsi = theRule->xsi[iInteg];
                   double weight = theRule->weight[iInteg];
                   femDiscretePhi(theSpace,xsi,phi); 
-
-                  double tx = x[1] - x[0]; 
-                  double ty = y[1] - y[0];
  
                   if(type == NEUMANN_T){
                     if(type == AXISYM){
