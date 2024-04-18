@@ -34,7 +34,7 @@ int main(void) {
 
   // OPTION 4 : Lecture d'un fichier .msh
   geoMeshGenerateMshFile("../data/mesh.msh");
-
+  /*
   geoMeshImport();
   geoSetDomainName(0, "Ladder bottom");
   geoSetDomainName(1, "Ladder right");
@@ -50,7 +50,7 @@ int main(void) {
   geoSetDomainName(11, "Slope top");
   geoSetDomainName(12, "Slide top");
   geoSetDomainName(13, "Ladder left");
-  
+  */
 
   geoMeshWrite("../data/mesh.txt");
   geoMeshWrite("../../Project/data/mesh.txt");
@@ -67,34 +67,19 @@ int main(void) {
   double gy = -9.81;
 
   femProblem *theProblem = femElasticityCreate(theGeometry, E, nu, rho, gx, gy, PLANAR_STRAIN);
-
+  
   femElasticityAddBoundaryCondition(theProblem, "Rectangle bottom", DIRICHLET_XY, 0.0, 0.0);
   femElasticityAddBoundaryCondition(theProblem, "Rectangle left", DIRICHLET_X, 0.0, NAN);
   femElasticityAddBoundaryCondition(theProblem, "Rectangle right", DIRICHLET_X, 0.0, NAN);
   femElasticityAddBoundaryCondition(theProblem, "Ladder bottom", DIRICHLET_XY, 0.0, 0.0);
-  // femElasticityAddBoundaryCondition(theProblem, "Ladder left", DIRICHLET_XY, 0.0, 0.0);
-  // femElasticityAddBoundaryCondition(theProblem, "Leaning rectangle left", DIRICHLET_XY, 0.0, 0.0);
-  // femElasticityAddBoundaryCondition(theProblem, "Leaning rectangle right", DIRICHLET_XY, 0.0, 0.0);
-  // femElasticityAddBoundaryCondition(theProblem, "Small rectangle right", DIRICHLET_XY, 0.0, 0.0);
   femElasticityAddBoundaryCondition(theProblem, "Small rectangle bottom", DIRICHLET_XY, 0.0, 0.0);
-  // femElasticityAddBoundaryCondition(theProblem, "Small rectangle bottom", DIRICHLET_NT, 0.0, 0.0);
-  // femElasticityAddBoundaryCondition(theProblem, "Arc 1", DIRICHLET_XY, 0.0, 0.0);
-  // femElasticityAddBoundaryCondition(theProblem, "Arc 2", DIRICHLET_XY, 0.0, 0.0);
-  // femElasticityAddBoundaryCondition(theProblem, "Small rectangle top", DIRICHLET_XY, 0.0, 0.0);
-  // femElasticityAddBoundaryCondition(theProblem, "Small rectangle right", DIRICHLET_XY, 0.0, 0.0);
-  // femElasticityAddBoundaryCondition(theProblem, "Slide top", DIRICHLET_XY, 0.0, 0.0);
-  // femElasticityAddBoundaryCondition(theProblem, "Leaning rectangle left", NEUMANN_X, -5e6, NAN);
-  // femElasticityAddBoundaryCondition(theProblem, "Rectangle top", NEUMANN_Y, -1.5e8, NAN);
-  // femElasticityAddBoundaryCondition(theProblem, "Leaning rectangle left", NEUMANN_Y, -2.5e7, NAN);
-  //femElasticityAddBoundaryCondition(theProblem, "Arc 1", DIRICHLET_XY, 0.0, 0.0);
-  // femElasticityAddBoundaryCondition(theProblem, "Slope bottom", DIRICHLET_Y, 0.0, NAN);
   femElasticityAddBoundaryCondition(theProblem, "Slope top", NEUMANN_Y, -1e6, NAN);
-  
+
   femElasticityPrint(theProblem);
   femElasticityWrite(theProblem, "../data/problem.txt");
   femElasticityWrite(theProblem, "../../Project/data/problem.txt");
   femElasticityWrite(theProblem, "../../ProjectPostProcessor/data/problem.txt");
-
+  
   //
   //  -3- Champ de la taille de référence du maillage (uniquement pour la visualisation)
   //
