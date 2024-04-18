@@ -102,7 +102,7 @@ void femElasticityAssembleNeumann(femProblem *theProblem) {
     int iBnd,iElem,iInteg,iEdge,i,j,d,map[2],mapU[2], mapUx[2], mapUy[2];
     int nLocal = 2;
     double *B  = theSystem->B;
-    double r = 0.0;
+    double r;
 
     for (iBnd = 0; iBnd < theProblem->nBoundaryConditions; iBnd++) {    
       femBoundaryCondition *theCondition = theProblem->conditions[iBnd];
@@ -114,22 +114,18 @@ void femElasticityAssembleNeumann(femProblem *theProblem) {
       if(type == NEUMANN_X || type == NEUMANN_Y){
         for (int e=0; e<nElem; e++) {
             for (int j=0; j<nLocal; j++) {
-                int node = theCondition->domain->mesh->elem[2*elem[e]+j];
+                int node = theCondition->domain->mesh->elem[nLocal*elem[e]+j];
+                map[j] = node;
                 if(type == NEUMANN_X){
-                    map[j] = node;
                     mapU[j] = 2*map[j];
-                    x[j] = theNodes->X[map[j]];
-                    y[j] = theNodes->Y[map[j]]; 
                 }
                 else if(type == NEUMANN_Y){
-                    map[j] = node;
                     mapU[j] = 2 * map[j] + 1;
-                    x[j] = theNodes->X[map[j]];
-                    y[j] = theNodes->Y[map[j]]; 
                 }
+                x[j] = theNodes->X[map[j]];
+                y[j] = theNodes->Y[map[j]]; 
             }
             double jac = sqrt(pow(x[1]-x[0], 2) + pow(y[1]-y[0], 2))/2.0;
-            double r = 0.0;
             for (iInteg=0; iInteg < theRule->n; iInteg++) {
               double r = 0.0; 
               for(int i=0; i<theSpace->n; i++) r += x[i]*phi[i];
@@ -150,7 +146,7 @@ void femElasticityAssembleNeumann(femProblem *theProblem) {
       if(type == NEUMANN_N || type == NEUMANN_T){
           for (int e=0; e<nElem; e++) {
               for (int j=0; j<nLocal; j++) {
-                  int node = theCondition->domain->mesh->elem[2*elem[e]+j];
+                  int node = theCondition->domain->mesh->elem[nLocal*elem[e]+j];
                   map[j] = node;
                   mapUx[j] = 2*map[j];           
                   mapUy[j] = 2 * map[j] + 1;
@@ -160,17 +156,17 @@ void femElasticityAssembleNeumann(femProblem *theProblem) {
               double jac = sqrt(pow(x[1]-x[0], 2) + pow(y[1]-y[0], 2))/2.0;
               
               for (iInteg=0; iInteg < theRule->n; iInteg++) {
-                  double r = 0.0;
+                  r = 0.0;
                   double xsi = theRule->xsi[iInteg];
                   double weight = theRule->weight[iInteg];
                   femDiscretePhi(theSpace,xsi,phi); 
 
-                  double tx = (theNodes->X[map[1]] - theNodes->X[map[0]]) / jac; 
-                  double ty = (theNodes->Y[map[1]] - theNodes->Y[map[0]]) / jac;
+                  double tx = (theNodes->X[map[1]] - theNodes->X[map[0]])/ jac; 
+                  double ty = (theNodes->Y[map[1]] - theNodes->Y[map[0]])/ jac;
 
                   for(int i=0; i<theSpace->n; i++) r += x[i]*phi[i];
 
-                  for (i = 0; i < nLocal; i++) {
+                  for (i = 0; i < theSpace->n; i++) {
                       if(type == NEUMANN_T){
                         if(type == AXISYM){
                           B[mapUx[i]] += phi[i] * value * jac * weight * tx * r; 
