@@ -130,17 +130,18 @@ void femElasticityAssembleNeumann(femProblem *theProblem) {
             double jac = sqrt(pow(x[1]-x[0], 2) + pow(y[1]-y[0], 2))/2.0;
             double r = 0.0;
             for (iInteg=0; iInteg < theRule->n; iInteg++) {
-                double xsi = theRule->xsi[iInteg];
-                double weight = theRule->weight[iInteg];
-                femDiscretePhi(theSpace,xsi,phi);
-                for(int i=0; i<nLocal; i++) r += x[i]*phi[i];
-                for (i = 0; i < theSpace->n; i++) {
-                  if (type == AXISYM){
-                    B[mapU[i]] += phi[i] * value * r * jac * weight;
-                  }else{
-                    B[mapU[i]] += phi[i] * value * jac * weight; 
-                  }
+              double r = 0.0; 
+              for(int i=0; i<theSpace->n; i++) r += x[i]*phi[i];
+              double xsi = theRule->xsi[iInteg];
+              double weight = theRule->weight[iInteg];
+              femDiscretePhi(theSpace,xsi,phi);
+              for (i = 0; i < theSpace->n; i++) {
+                if (type == AXISYM){
+                  B[mapU[i]] += phi[i] * value * r * jac * weight;
+                }else{
+                  B[mapU[i]] += phi[i] * value * jac * weight; 
                 }
+              }
             }
         }     
       } 
@@ -156,9 +157,9 @@ void femElasticityAssembleNeumann(femProblem *theProblem) {
                   y[j] = theNodes->Y[map[j]]; 
               }
               double jac = sqrt(pow(x[1]-x[0], 2) + pow(y[1]-y[0], 2))/2.0;
-              double r = 0.0;
+              
               for (iInteg=0; iInteg < theRule->n; iInteg++) {
-                  
+                  double r = 0.0;
                   double xsi = theRule->xsi[iInteg];
                   double weight = theRule->weight[iInteg];
                   femDiscretePhi(theSpace,xsi,phi); 
@@ -170,7 +171,7 @@ void femElasticityAssembleNeumann(femProblem *theProblem) {
 
                   for (i = 0; i < nLocal; i++) {
                       if(type == NEUMANN_T){
-                        if(AXISYM){
+                        if(type == AXISYM){
                           B[mapUx[i]] += phi[i] * value * jac * weight * tx * r; 
                           B[mapUy[i]] += phi[i] * value * jac * weight * ty * r; 
                         }else{

@@ -25,7 +25,7 @@ int main(void) {
   // geoMeshGenerate();
 
   // OPTION 2 : Utilisation de GMSH directement
-  theGeometry->h = 0.05;
+  // theGeometry->h = 0.05;
   // geoMeshGenerateGeo();
 
   // OPTION 3 : Lecture d'un fichier .geo
@@ -74,7 +74,7 @@ int main(void) {
   femElasticityAddBoundaryCondition(theProblem, "Ladder bottom", DIRICHLET_XY, 0.0, 0.0);
   femElasticityAddBoundaryCondition(theProblem, "Small rectangle bottom", DIRICHLET_XY, 0.0, 0.0);
   // femElasticityAddBoundaryCondition(theProblem, "Slope top", NEUMANN_Y, -100*9.81, NAN);
-  femElasticityAddBoundaryCondition(theProblem, "Slide top", NEUMANN_Y, -100*9.81, NAN);
+  femElasticityAddBoundaryCondition(theProblem, "Slide top", NEUMANN_Y, -1000*9.81, NAN);
   // femElasticityAddBoundaryCondition(theProblem, "Small rectangle top", NEUMANN_Y, -10000000*9.81, NAN);
 
   femElasticityPrint(theProblem);

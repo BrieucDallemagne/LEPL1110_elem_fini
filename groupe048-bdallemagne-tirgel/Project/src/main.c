@@ -23,11 +23,12 @@ int main(void) {
 
   double *theSoluce = femElasticitySolve(theProblem);
 
+  clock_t end = clock();
+
   int nNodes = theGeometry->theNodes->nNodes;
   femSolutionWrite(nNodes, 2, theSoluce, "../data/UV.txt");
   femSolutionWrite(nNodes, 2, theSoluce, "../../ProjectPostProcessor/data/UV.txt");
   
-  clock_t end = clock();
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
   printf("Time spent: %f seconds\n", time_spent);
 
