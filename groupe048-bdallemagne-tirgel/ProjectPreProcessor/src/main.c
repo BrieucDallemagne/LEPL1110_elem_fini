@@ -34,7 +34,7 @@ int main(void) {
 
   // OPTION 4 : Lecture d'un fichier .msh
   geoMeshGenerateMshFile("../data/mesh.msh");
-  /*
+  
   geoMeshImport();
   geoSetDomainName(0, "Ladder bottom");
   geoSetDomainName(1, "Ladder right");
@@ -50,7 +50,7 @@ int main(void) {
   geoSetDomainName(11, "Slope top");
   geoSetDomainName(12, "Slide top");
   geoSetDomainName(13, "Ladder left");
-  */
+  
 
   geoMeshWrite("../data/mesh.txt");
   geoMeshWrite("../../Project/data/mesh.txt");
