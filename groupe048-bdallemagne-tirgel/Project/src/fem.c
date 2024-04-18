@@ -661,7 +661,7 @@ void femFullSystemConstrainN(femFullSystem *mySystem, int myNode, double myValue
   }
 }
 
-void femFullSystemConstrainT(femFullSystem *mySystem, int myNode, double myValue, double tx, double ty){
+void femFullSystemConstrainT(femFullSystem *mySystem, int myNode, double myValue, double nx, double ny){
   double **A  = mySystem->A;
   double *B  = mySystem->B;
   int size = mySystem->size;
@@ -671,8 +671,8 @@ void femFullSystemConstrainT(femFullSystem *mySystem, int myNode, double myValue
   map = myNode;
   mapX = 2*myNode;
   mapY = 2*myNode + 1;
-  double nx = ty;
-  double ny = -tx;
+  double tx = -ny;
+  double ty = nx;
 
   double a_xx = A[mapX][mapX];
   double a_xy = A[mapX][mapY];
