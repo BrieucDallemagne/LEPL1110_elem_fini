@@ -26,31 +26,30 @@ int main(void) {
 
   // OPTION 2 : Utilisation de GMSH directement
   theGeometry->h = 0.05;
-  geoMeshGenerateGeo();
+  // geoMeshGenerateGeo();
 
   // OPTION 3 : Lecture d'un fichier .geo
   // theGeometry->h = 0.05;
   // geoMeshGenerateGeoFile("../data/mesh.geo");
 
   // OPTION 4 : Lecture d'un fichier .msh
-  // geoMeshGenerateMshFile("../data/mesh.msh");
+  geoMeshGenerateMshFile("../data/mesh.msh");
 
-  
   geoMeshImport();
-  geoSetDomainName(0, "Rectangle left");
-  geoSetDomainName(1, "Rectangle bottom");
-  geoSetDomainName(2, "Rectangle right");
-  geoSetDomainName(3, "Arc 1");
-  geoSetDomainName(4, "Arc 2");
-  geoSetDomainName(5, "Small rectangle bottom"); 
-  geoSetDomainName(6, "Small rectangle right");
-  geoSetDomainName(7, "Small rectangle top");
-  geoSetDomainName(8, "Arc 3");
-  geoSetDomainName(9, "Arc 4");
-  geoSetDomainName(10, "Rectangle top");
-  geoSetDomainName(11, "Leaning rectangle left");
-  geoSetDomainName(12, "Leaning rectangle bottom");
-  geoSetDomainName(13, "Leaning rectangle right");
+  geoSetDomainName(0, "Ladder bottom");
+  geoSetDomainName(1, "Ladder right");
+  geoSetDomainName(2, "Segment 1");
+  geoSetDomainName(3, "Rectangle left");
+  geoSetDomainName(4, "Rectangle bottom");
+  geoSetDomainName(5, "Rectangle right"); 
+  geoSetDomainName(6, "Segment 2");
+  geoSetDomainName(7, "Slope bottom");
+  geoSetDomainName(8, "Small rectangle bottom");
+  geoSetDomainName(9, "Small rectangle right");
+  geoSetDomainName(10, "Small rectangle top");
+  geoSetDomainName(11, "Slope top");
+  geoSetDomainName(12, "Slide top");
+  geoSetDomainName(13, "Ladder left");
   
 
   geoMeshWrite("../data/mesh.txt");
@@ -72,7 +71,7 @@ int main(void) {
   femElasticityAddBoundaryCondition(theProblem, "Rectangle bottom", DIRICHLET_XY, 0.0, 0.0);
   femElasticityAddBoundaryCondition(theProblem, "Rectangle left", DIRICHLET_X, 0.0, NAN);
   femElasticityAddBoundaryCondition(theProblem, "Rectangle right", DIRICHLET_X, 0.0, NAN);
-  femElasticityAddBoundaryCondition(theProblem, "Leaning rectangle bottom", DIRICHLET_XY, 0.0, 0.0);
+  femElasticityAddBoundaryCondition(theProblem, "Ladder left", DIRICHLET_XY, 0.0, 0.0);
   // femElasticityAddBoundaryCondition(theProblem, "Leaning rectangle left", DIRICHLET_XY, 0.0, 0.0);
   // femElasticityAddBoundaryCondition(theProblem, "Leaning rectangle right", DIRICHLET_XY, 0.0, 0.0);
   // femElasticityAddBoundaryCondition(theProblem, "Small rectangle right", DIRICHLET_XY, 0.0, 0.0);
@@ -82,13 +81,13 @@ int main(void) {
   // femElasticityAddBoundaryCondition(theProblem, "Arc 2", DIRICHLET_XY, 0.0, 0.0);
   // femElasticityAddBoundaryCondition(theProblem, "Small rectangle top", DIRICHLET_XY, 0.0, 0.0);
   // femElasticityAddBoundaryCondition(theProblem, "Small rectangle right", DIRICHLET_XY, 0.0, 0.0);
-  femElasticityAddBoundaryCondition(theProblem, "Rectangle top", DIRICHLET_XY, 0.0, 0.0);
+  // femElasticityAddBoundaryCondition(theProblem, "Slide top", DIRICHLET_XY, 0.0, 0.0);
   // femElasticityAddBoundaryCondition(theProblem, "Leaning rectangle left", NEUMANN_X, -5e6, NAN);
   // femElasticityAddBoundaryCondition(theProblem, "Rectangle top", NEUMANN_Y, -1.5e8, NAN);
   // femElasticityAddBoundaryCondition(theProblem, "Leaning rectangle left", NEUMANN_Y, -2.5e7, NAN);
   //femElasticityAddBoundaryCondition(theProblem, "Arc 1", DIRICHLET_XY, 0.0, 0.0);
-  femElasticityAddBoundaryCondition(theProblem, "Arc 2", DIRICHLET_Y, 0.0, NAN);
-  femElasticityAddBoundaryCondition(theProblem, "Arc 4", NEUMANN_Y, -1e8, NAN);
+  femElasticityAddBoundaryCondition(theProblem, "Slope bottom", DIRICHLET_Y, 0.0, NAN);
+  femElasticityAddBoundaryCondition(theProblem, "Slope top", NEUMANN_Y, -1e8, NAN);
   
   femElasticityPrint(theProblem);
   femElasticityWrite(theProblem, "../data/problem.txt");
