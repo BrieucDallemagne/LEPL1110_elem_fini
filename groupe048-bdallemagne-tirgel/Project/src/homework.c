@@ -127,7 +127,7 @@ void femElasticityAssembleNeumann(femProblem *theProblem) {
           }
           double jac = sqrt(pow(x[1]-x[0], 2) + pow(y[1]-y[0], 2))/2.0;
           for (iInteg=0; iInteg < theRule->n; iInteg++) {
-            double r = 0.0; 
+            r = 0.0; 
             for(int i=0; i<theSpace->n; i++) r += x[i]*phi[i];
             double xsi = theRule->xsi[iInteg];
             double weight = theRule->weight[iInteg];
@@ -158,8 +158,8 @@ void femElasticityAssembleNeumann(femProblem *theProblem) {
               double h = sqrt(pow(x[1]-x[0], 2) + pow(y[1]-y[0], 2));
               double jac = h/2.0;
 
-              double tx = x[1] - x[0]; 
-              double ty = y[1] - y[0];
+              double tx = (x[1] - x[0]); 
+              double ty = (y[1] - y[0]);
               
               for (iInteg=0; iInteg < theRule->n; iInteg++) {
                   r = 0.0;
