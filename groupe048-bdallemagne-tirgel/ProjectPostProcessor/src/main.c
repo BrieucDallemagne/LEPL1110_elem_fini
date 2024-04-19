@@ -23,8 +23,10 @@ int main(void) {
 
   femGeo *theGeometry = geoGetGeometry();
   geoMeshRead("../data/mesh.txt");
+  // geoMeshRead("../data/mesh_basic_quads.txt");
 
   femProblem *theProblem = femElasticityRead(theGeometry, "../data/problem.txt");
+  // femProblem *theProblem = femElasticityRead(theGeometry, "../data/problem_GravityOnly_Axisym.txt");
   double *theSoluce = theProblem->soluce;
   int n = theGeometry->theNodes->nNodes;
   femSolutiondRead(2*n,theSoluce, "../data/UV.txt");
