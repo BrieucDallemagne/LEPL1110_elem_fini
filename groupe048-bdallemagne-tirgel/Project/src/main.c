@@ -17,7 +17,9 @@ int main(void) {
   
   femGeo *theGeometry = geoGetGeometry();
   geoMeshRead("../data/mesh.txt");
+  // geoMeshRead("../data/mesh_basic_quads.txt");
   femProblem *theProblem = femElasticityRead(theGeometry, "../data/problem.txt");
+  // femProblem *theProblem = femElasticityRead(theGeometry, "../data/problem_GravityOnly_Axisym.txt");
   femElasticityPrint(theProblem);
   clock_t begin = clock();
 

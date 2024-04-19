@@ -92,114 +92,90 @@ void femElasticityAssembleElements(femProblem *theProblem) {
 }
 
 void femElasticityAssembleNeumann(femProblem *theProblem) {
-    femFullSystem  *theSystem = theProblem->system;
-    femIntegration *theRule = theProblem->ruleEdge;
-    femDiscrete    *theSpace = theProblem->spaceEdge;
-    femGeo         *theGeometry = theProblem->geometry;
-    femNodes       *theNodes = theGeometry->theNodes;
-    femMesh        *theEdges = theGeometry->theEdges;
-    double x[2],y[2],phi[2];
-    int iBnd,iElem,iInteg,iEdge,i,j,d,map[2],mapU[2], mapUx[2], mapUy[2];
-    int nLocal = 2;
-    double *B  = theSystem->B;
-    double r;
+  femFullSystem *theSystem = theProblem->system;
+  femIntegration *theRule = theProblem->ruleEdge;
+  femDiscrete *theSpace = theProblem->spaceEdge;
+  femGeo *theGeometry = theProblem->geometry;
+  femNodes *theNodes = theGeometry->theNodes;
+  femMesh *theEdges = theGeometry->theEdges;
+  double x[2], y[2], phi[2];
+  int iBnd, iElem, iInteg, iEdge, i, j, d, map[2];
+  int nLocal = 2;
+  double *B = theSystem->B;
+  double r;
 
-    for (iBnd = 0; iBnd < theProblem->nBoundaryConditions; iBnd++) {    
-      femBoundaryCondition *theCondition = theProblem->conditions[iBnd];
-      femBoundaryType type = theCondition->type;
-      double value = theCondition->value1;
-      int *elem = theCondition->domain->elem;
-      int nElem = theCondition->domain->nElem;
+  for (iBnd = 0; iBnd < theProblem->nBoundaryConditions; iBnd++) {
+    femBoundaryCondition *theCondition = theProblem->conditions[iBnd];
+    femBoundaryType type = theCondition->type;
+    double value = theCondition->value1;
 
-      if(type == NEUMANN_X || type == NEUMANN_Y){
-        for (int e=0; e<nElem; e++) {
-          for (int j=0; j<nLocal; j++) {
-            int node = theCondition->domain->mesh->elem[nLocal*elem[e]+j];
-            map[j] = node;
-            if(type == NEUMANN_X){
-                mapU[j] = 2*map[j];
-            }
-            else if(type == NEUMANN_Y){
-                mapU[j] = 2 * map[j] + 1;
-            }
-            x[j] = theNodes->X[map[j]];
-            y[j] = theNodes->Y[map[j]]; 
-          }
-          double jac = sqrt(pow(x[1]-x[0], 2) + pow(y[1]-y[0], 2))/2.0;
-          for (iInteg=0; iInteg < theRule->n; iInteg++) {
-            r = 0.0; 
-            for(int i=0; i<theSpace->n; i++) r += x[i]*phi[i];
-            double xsi = theRule->xsi[iInteg];
-            double weight = theRule->weight[iInteg];
-            femDiscretePhi(theSpace,xsi,phi);
-            if (type == AXISYM){
-              for (i = 0; i < theSpace->n; i++) {
-                B[mapU[i]] += phi[i] * value * r * jac * weight;
-              }
-            }else{
-              for (i = 0; i < theSpace->n; i++) {
-                B[mapU[i]] += phi[i] * value * jac * weight;
-              }
-            }
-          }
-        }     
-      } 
-      if(type == NEUMANN_N || type == NEUMANN_T){
-          for (int e=0; e<nElem; e++) {
-              for (int j=0; j<nLocal; j++) {
-                int node = theCondition->domain->mesh->elem[nLocal*elem[e]+j];
-                map[j] = node;
-                mapUx[j] = 2*map[j];           
-                mapUy[j] = 2 * map[j] + 1;
-                x[j] = theNodes->X[map[j]];
-                y[j] = theNodes->Y[map[j]]; 
-              }
-              
-              double h = sqrt(pow(x[1]-x[0], 2) + pow(y[1]-y[0], 2));
-              double jac = h/2.0;
-
-              double tx = (x[1] - x[0]); 
-              double ty = (y[1] - y[0]);
-              
-              for (iInteg=0; iInteg < theRule->n; iInteg++) {
-                  r = 0.0;
-                  for(int i=0; i<theSpace->n; i++) r += x[i]*phi[i];
-                  double xsi = theRule->xsi[iInteg];
-                  double weight = theRule->weight[iInteg];
-                  femDiscretePhi(theSpace,xsi,phi); 
- 
-                  if(type == NEUMANN_T){
-                    if(type == AXISYM){
-                      for (i = 0; i < theSpace->n; i++) {
-                        B[mapUx[i]] += phi[i] * value * jac * weight * tx * r; 
-                        B[mapUy[i]] += phi[i] * value * jac * weight * ty * r; 
-                      }  
-                    }else{
-                      for (i = 0; i < theSpace->n; i++) {
-                        B[mapUx[i]] += phi[i] * value * jac * weight * tx; 
-                        B[mapUy[i]] += phi[i] * value * jac * weight * ty; 
-                      }
-                    }
-                  }
-                  if(type == NEUMANN_N){
-                    double nx = ty/h;
-                    double ny = -tx/h;
-                    if(type == AXISYM){
-                      for (i = 0; i < theSpace->n; i++) {
-                        B[mapUx[i]] += phi[i] * value * weight * jac * nx * r; 
-                        B[mapUy[i]] += phi[i] * value * weight * jac * ny * r; 
-                      }
-                    }else{
-                      for (i = 0; i < theSpace->n; i++) {
-                        B[mapUx[i]] += phi[i] * value * weight * jac * nx; 
-                        B[mapUy[i]] += phi[i] * value * weight * jac * ny;
-                      }
-                    }
-                  }
-              }
-          }     
-      }         
+    if(type != NEUMANN_X && type != NEUMANN_Y && type != NEUMANN_N && type != NEUMANN_T){
+      continue;
     }
+
+    for (iEdge = 0; iEdge < theCondition->domain->nElem; iEdge++) {
+      iElem = theCondition->domain->elem[iEdge];
+      for (j = 0; j < nLocal; j++) {
+        map[j] = theEdges->elem[iElem * nLocal + j];
+        x[j] = theNodes->X[map[j]];
+        y[j] = theNodes->Y[map[j]];
+      }
+
+      double tx = x[1] - x[0];
+      double ty = y[1] - y[0];
+      double length = hypot(tx, ty);
+      double jac = length / 2.0;
+      
+      double f_x = 0.0;
+      double f_y = 0.0;
+      double f_n = 0.0;
+      double f_t = 0.0;
+
+      if (type == NEUMANN_X) {
+        f_x = value;
+      }
+      if (type == NEUMANN_Y) {
+        f_y = value;
+      }
+      if (type == NEUMANN_N) {
+        f_n = value;
+      }
+      if (type == NEUMANN_T) {
+        f_t = value;
+      }
+
+      double nx =  ty / length;
+      double ny = -tx / length;
+
+      for (iInteg = 0; iInteg < theRule->n; iInteg++) {
+        r = 0.0;
+        for(int i=0; i<theSpace->n; i++) r += x[i]*phi[i];
+        double xsi = theRule->xsi[iInteg];
+        double weight = theRule->weight[iInteg];
+        femDiscretePhi(theSpace, xsi, phi);
+        for (i = 0; i < theSpace->n; i++) {
+          if(type == NEUMANN_X || type == NEUMANN_Y){
+            if(theProblem->planarStrainStress == AXISYM){
+              B[2*map[i] + 0] += jac * weight * phi[i] * f_x * r;
+              B[2*map[i] + 1] += jac * weight * phi[i] * f_y * r;
+            }else{
+              B[2*map[i] + 0] += jac * weight * phi[i] * f_x;
+              B[2*map[i] + 1] += jac * weight * phi[i] * f_y;
+            }
+          }
+          if(type == NEUMANN_N || type == NEUMANN_T){
+            if(theProblem->planarStrainStress == AXISYM){
+              B[2*map[i] + 0] += jac * weight * phi[i] * (f_n * nx + f_t * tx) * r;
+              B[2*map[i] + 1] += jac * weight * phi[i] * (f_n * ny + f_t * ty) * r;
+            }else{
+              B[2*map[i] + 0] += jac * weight * phi[i] * (f_n * nx + f_t * tx);
+              B[2*map[i] + 1] += jac * weight * phi[i] * (f_n * ny + f_t * ty);
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 
