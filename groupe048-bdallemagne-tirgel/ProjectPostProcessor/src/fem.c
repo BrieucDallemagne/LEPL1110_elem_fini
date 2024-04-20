@@ -729,7 +729,7 @@ femProblem *femElasticityCreate(femGeo *theGeometry, double E, double nu, double
   theProblem->system = femFullSystemCreate(size);
   return theProblem;
 }
-void femElasticityConstrain_vM_Stress(femProblem *theProblem, double *sigma){
+void femElasticityConstrain_Nodes_Stress(femProblem *theProblem, double *sigma){
   femIntegration *theRule = theProblem->rule; //
   femDiscrete *theSpace = theProblem->space; //
   femGeo *theGeometry = theProblem->geometry; //

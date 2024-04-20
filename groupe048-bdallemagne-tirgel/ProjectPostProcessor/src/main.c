@@ -32,6 +32,8 @@ int main(void) {
   femSolutiondRead(2*n,theSoluce, "../data/UV.txt");
   femElasticityPrint(theProblem);
 
+  // femElasticityConstrain_Nodes_Stress(*theProblem, );
+
   //
   //  -2- Deformation du maillage pour le plot final
   //      Creation du champ de la norme du deplacement
