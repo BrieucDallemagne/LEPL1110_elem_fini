@@ -51,7 +51,6 @@ int main(void) {
   geoSetDomainName(12, "Slide top");
   geoSetDomainName(13, "Ladder left");
   
-
   geoMeshWrite("../data/mesh.txt");
   geoMeshWrite("../../Project/data/mesh.txt");
   geoMeshWrite("../../ProjectPostProcessor/data/mesh.txt");
@@ -73,10 +72,8 @@ int main(void) {
   femElasticityAddBoundaryCondition(theProblem, "Rectangle right", DIRICHLET_X, 0.0, NAN);
   femElasticityAddBoundaryCondition(theProblem, "Ladder bottom", DIRICHLET_XY, 0.0, 0.0);
   femElasticityAddBoundaryCondition(theProblem, "Small rectangle bottom", DIRICHLET_XY, 0.0, 0.0);
-  // femElasticityAddBoundaryCondition(theProblem, "Slope top", NEUMANN_Y, -100*9.81, NAN);
-  // femElasticityAddBoundaryCondition(theProblem, "Slide top", NEUMANN_N, -1e5, NAN);
-  // femElasticityAddBoundaryCondition(theProblem, "Small rectangle right", NEUMANN_X, -1e6, 0.0);
-  femElasticityAddBoundaryCondition(theProblem, "Small rectangle top", NEUMANN_Y, -100000*9.81, NAN);
+  // femElasticityAddBoundaryCondition(theProblem, "Slide top", NEUMANN_Y, -1e5, NAN);
+  // femElasticityAddBoundaryCondition(theProblem, "Slope top", NEUMANN_Y, -24*9.81, NAN);
 
   femElasticityPrint(theProblem);
   femElasticityWrite(theProblem, "../data/problem.txt");
