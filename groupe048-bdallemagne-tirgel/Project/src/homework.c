@@ -131,18 +131,23 @@ void femElasticityAssembleNeumann(femProblem *theProblem) {
       double f_n = 0.0;
       double f_t = 0.0;
 
-      if (type == NEUMANN_X) {
-        f_x = value;
-      }
-      if (type == NEUMANN_Y) {
-        f_y = value;
-      }
-      if (type == NEUMANN_N) {
-        f_n = value;
-      }
-      if (type == NEUMANN_T) {
-        f_t = value;
-      }
+      switch(type) {
+        case NEUMANN_X:
+            f_x = value;
+            break;
+        case NEUMANN_Y:
+            f_y = value;
+            break;
+        case NEUMANN_N:
+            f_n = value;
+            break;
+        case NEUMANN_T:
+            f_t = value;
+            break;
+        default:
+            // Handle other cases here if necessary
+            break;
+       }
 
       double nx =  ty / length;
       double ny = -tx / length;
