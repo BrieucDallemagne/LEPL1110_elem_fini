@@ -164,6 +164,7 @@ void femFullSystemInit(femFullSystem *mySystem);
 void femFullSystemAlloc(femFullSystem *mySystem, int size);
 double *femFullSystemEliminate(femFullSystem *mySystem);
 void femFullSystemConstrain(femFullSystem *mySystem, int myNode, double value);
+void femElasticityConstrain_vM_Stress(femProblem *theProblem, double *sigma);
 
 double femMin(double *x, int n);
 double femMax(double *x, int n);

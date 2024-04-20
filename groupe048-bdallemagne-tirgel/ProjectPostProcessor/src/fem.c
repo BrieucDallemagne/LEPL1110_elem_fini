@@ -729,7 +729,107 @@ femProblem *femElasticityCreate(femGeo *theGeometry, double E, double nu, double
   theProblem->system = femFullSystemCreate(size);
   return theProblem;
 }
+void femElasticityConstrain_vM_Stress(femProblem *theProblem, double *sigma){
+  femIntegration *theRule = theProblem->rule; //
+  femDiscrete *theSpace = theProblem->space; //
+  femGeo *theGeometry = theProblem->geometry; //
+  femMesh *theMesh = theGeometry->theElements; // 
+  femNodes *theNodes = theGeometry->theNodes; //
 
+  double *theSoluce = theProblem->soluce; 
+  int nLocal = theMesh->nLocalNode; 
+  int nNodes = theNodes->nNodes; 
+
+  double x[4], y[4], phi[4], dphidxsi[4], dphideta[4], dphidx[4], dphidy[4], U[4], V[4];
+  int iElem, iInteg, iEdge, i, j, d, map[4], mapX[4], mapY[4];
+
+  double a = theProblem->A;
+  double b = theProblem->B;
+  double c = theProblem->C;
+
+  femFullSystem *theSystemxx = femFullSystemCreate(nNodes);
+  double **Axx = theSystemxx->A;
+  double *Bxx = theSystemxx->B;
+
+  femFullSystem *theSystemyy = femFullSystemCreate(nNodes);
+  double **Ayy = theSystemyy->A;
+  double *Byy = theSystemyy->B;
+
+  femFullSystem *theSystemxy = femFullSystemCreate(nNodes);
+  double **Axy = theSystemxy->A;
+  double *Bxy = theSystemxy->B;
+
+  for (iElem = 0; iElem < theMesh->nElem; iElem++) {
+    for (j = 0; j < nLocal; j++) {
+      map[j] = theMesh->elem[iElem * nLocal + j];
+      U[j] = theSoluce[2 * map[j]];
+      V[j] = theSoluce[2 * map[j] + 1];
+
+      x[j] = theNodes->X[map[j]];
+      y[j] = theNodes->Y[map[j]];
+    }
+    for (iInteg = 0; iInteg < theRule->n; iInteg++) {
+      double xsi = theRule->xsi[iInteg];
+      double eta = theRule->eta[iInteg];
+      double weight = theRule->weight[iInteg];
+      femDiscretePhi2(theSpace, xsi, eta, phi);
+      femDiscreteDphi2(theSpace, xsi, eta, dphidxsi, dphideta);
+
+      double dxdxsi = 0.0;
+      double dxdeta = 0.0;
+      double dydxsi = 0.0;
+      double dydeta = 0.0;
+      for (i = 0; i < theSpace->n; i++) {
+        dxdxsi += x[i] * dphidxsi[i];
+        dxdeta += x[i] * dphideta[i];
+        dydxsi += y[i] * dphidxsi[i];
+        dydeta += y[i] * dphideta[i];
+      }
+      double jac = dxdxsi * dydeta - dxdeta * dydxsi;
+      if (jac < 0.0)
+        printf("Negative jacobian! Your mesh is oriented in reverse. The normals will be wrong\n");
+      jac = fabs(jac);
+
+      for (i = 0; i < theSpace->n; i++) {
+        dphidx[i] = (dphidxsi[i] * dydeta - dphideta[i] * dydxsi) / jac;
+        dphidy[i] = (dphideta[i] * dxdxsi - dphidxsi[i] * dxdeta) / jac;
+      }
+      for (i = 0; i < theSpace->n; i++) {
+        for (j = 0; j < theSpace->n; j++) {
+          double M = phi[i] * phi[j];
+          Axx[map[i]][map[j]] +=  M * jac * weight;
+          Ayy[map[i]][map[j]] +=  M * jac * weight;
+          Axy[map[i]][map[j]] +=  M * jac * weight;
+        }
+      }
+      for (i = 0; i < theSpace->n; i++) {
+        Bxx[map[i]] += phi[i] * dphidx[i] * U[i] * jac * weight;
+        Byy[map[i]] += phi[i] * dphidx[i] * V[i] * jac * weight;
+        Bxy[map[i]] += 1/2 * phi[i] * (U[i] * dphidy[i] + V[i] * dphidx[i]) * jac * weight;
+      }
+    }
+  }
+
+  femFullSystemEliminate(theSystemxx);
+  femFullSystemEliminate(theSystemyy);
+  femFullSystemEliminate(theSystemxy);
+
+  for(int i = 0; i<nNodes; i++){
+    double Eps_xx = theSystemxx->B[i];
+    double Eps_yy = theSystemyy->B[i];
+    double Eps_xy = theSystemxy->B[i];
+
+    sigma[3*i] = a * Eps_xx + b * Eps_yy;
+    sigma[3*i+1] = a * Eps_yy + b * Eps_xx;
+    sigma[3*i+2] = 2 * c * Eps_xy;
+
+  }
+
+  femFullSystemFree(theSystemxx);
+  femFullSystemFree(theSystemyy);
+  femFullSystemFree(theSystemxy);
+
+}
 
 void femElasticityFree(femProblem *theProblem) {
   femFullSystemFree(theProblem->system);
