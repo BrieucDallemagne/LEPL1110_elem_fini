@@ -73,7 +73,15 @@ int main(void) {
   femElasticityAddBoundaryCondition(theProblem, "Ladder bottom", DIRICHLET_XY, 0.0, 0.0);
   femElasticityAddBoundaryCondition(theProblem, "Small rectangle bottom", DIRICHLET_XY, 0.0, 0.0);
   // femElasticityAddBoundaryCondition(theProblem, "Slide top", NEUMANN_Y, -1e5, NAN);
-  // femElasticityAddBoundaryCondition(theProblem, "Slope top", NEUMANN_Y, -24*9.81, NAN);
+
+  // femElasticityAddBoundaryCondition(theProblem, "Slope top", NEUMANN_Y, 0.0, NAN);
+  femElasticityAddBoundaryCondition(theProblem, "Slope top", NEUMANN_Y, -24*9.81, NAN);
+  // femElasticityAddBoundaryCondition(theProblem, "Slope top", NEUMANN_Y, -100*9.81, NAN);
+  // femElasticityAddBoundaryCondition(theProblem, "Slope top", NEUMANN_Y, -200*9.81, NAN);
+  // femElasticityAddBoundaryCondition(theProblem, "Slope top", NEUMANN_Y, -350*9.81, NAN);
+  // femElasticityAddBoundaryCondition(theProblem, "Slope top", NEUMANN_Y, -500*9.81, NAN);
+  
+
 
   femElasticityPrint(theProblem);
   femElasticityWrite(theProblem, "../data/problem.txt");
