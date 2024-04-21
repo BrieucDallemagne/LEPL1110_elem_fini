@@ -81,8 +81,6 @@ int main(void) {
   // femElasticityAddBoundaryCondition(theProblem, "Slope top", NEUMANN_Y, -350*9.81, NAN);
   // femElasticityAddBoundaryCondition(theProblem, "Slope top", NEUMANN_Y, -500*9.81, NAN);
   
-
-
   femElasticityPrint(theProblem);
   femElasticityWrite(theProblem, "../data/problem.txt");
   femElasticityWrite(theProblem, "../../Project/data/problem.txt");
