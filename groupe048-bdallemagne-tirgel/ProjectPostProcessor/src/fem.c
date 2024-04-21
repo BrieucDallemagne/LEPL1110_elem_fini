@@ -794,18 +794,17 @@ void femElasticityConstrain_Nodes_Stress(femProblem *theProblem, double *sigma){
         dphidx[i] = (dphidxsi[i] * dydeta - dphideta[i] * dydxsi) / jac;
         dphidy[i] = (dphideta[i] * dxdxsi - dphidxsi[i] * dxdeta) / jac;
       }
-      for (i = 0; i < theSpace->n; i++) {
-        for (j = 0; j < theSpace->n; j++) {
+      for (i = 0; i < nLocal; i++) {
+        for (j = 0; j < nLocal; j++) {
           double M = phi[i] * phi[j];
           Axx[map[i]][map[j]] +=  M * jac * weight;
           Ayy[map[i]][map[j]] +=  M * jac * weight;
           Axy[map[i]][map[j]] +=  M * jac * weight;
+
+          Bxx[map[i]] += phi[i] * dphidx[j] * U[j] * jac * weight;
+          Byy[map[i]] += phi[i] * dphidx[j] * V[i] * jac * weight;
+          Bxy[map[i]] += 1/2 * phi[i] * (U[j] * dphidy[j] + V[j] * dphidx[j]) * jac * weight;
         }
-      }
-      for (i = 0; i < theSpace->n; i++) {
-        Bxx[map[i]] += phi[i] * dphidx[i] * U[i] * jac * weight;
-        Byy[map[i]] += phi[i] * dphidx[i] * V[i] * jac * weight;
-        Bxy[map[i]] += 1/2 * phi[i] * (U[i] * dphidy[i] + V[i] * dphidx[i]) * jac * weight;
       }
     }
   }

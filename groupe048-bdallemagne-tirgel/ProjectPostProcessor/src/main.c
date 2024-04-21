@@ -26,13 +26,13 @@ int main(void) {
   // geoMeshRead("../data/mesh_basic_quads.txt");
 
   femProblem *theProblem = femElasticityRead(theGeometry, "../data/problem.txt");
+  
   // femProblem *theProblem = femElasticityRead(theGeometry, "../data/problem_GravityOnly_Axisym.txt");
   double *theSoluce = theProblem->soluce;
   int n = theGeometry->theNodes->nNodes;
+
   femSolutiondRead(2*n,theSoluce, "../data/UV.txt");
   femElasticityPrint(theProblem);
-
-  // femElasticityConstrain_Nodes_Stress(*theProblem, );
 
   //
   //  -2- Deformation du maillage pour le plot final
@@ -53,6 +53,69 @@ int main(void) {
   double hMax = femMax(normDisplacement, n);
   printf(" ==== Minimum displacement          : %14.7e \n", hMin);
   printf(" ==== Maximum displacement          : %14.7e \n", hMax);
+  printf("\n\n ======================================================================================= \n\n");
+
+  //
+  // -2.5- Contraintes
+  //
+
+  double yieldConstraint = 2e10;
+
+  double *sigma = malloc(3 * n * sizeof(double));
+
+  femElasticityConstrain_Nodes_Stress(theProblem, sigma);
+  
+  double *sigmaxx = malloc(n * sizeof(double));
+  double *sigmayy = malloc(n * sizeof(double));
+  double *sigmaxy = malloc(n * sizeof(double));
+  double *von_Mises = malloc(n * sizeof(double));
+  double isPlastic = 0;
+  double trace, sigmadevrr, sigmadevtt, sigmadevzz, sigmadevrz;
+
+  for(int i = 0; i < n; i++) {
+    sigmaxx[i] = sigma[3*i];
+    sigmayy[i] = sigma[3*i+1];
+    sigmaxy[i] = sigma[3*i+2];
+  }
+  
+  for(int iNode = 0; iNode < n; iNode++) {
+    trace = sigmaxx[iNode] + sigmayy[iNode];
+    sigmadevrr = sigmaxx[iNode] - trace / 3;
+    sigmadevtt = -trace / 3;
+    sigmadevzz = sigmayy[iNode] - trace / 3;
+    sigmadevrz = sigmaxy[iNode];
+    von_Mises[iNode] = sqrt((3/2) * (sigmadevrr * sigmadevrr + sigmadevtt * sigmadevtt + sigmadevzz * sigmadevzz + 2 * sigmadevrz * sigmadevrz));
+  }
+
+  for(int i = 0; i < n; i++) {
+    if(von_Mises[i] > yieldConstraint) {
+      isPlastic = 1;
+    }
+  }
+
+  double sigmaxxMax = femMin(sigmaxx, n);
+  double sigmaxxMin = femMax(sigmaxx, n);
+  double sigmayyMax = femMax(sigmayy, n);
+  double sigmayyMin = femMin(sigmayy, n);
+  double sigmaxyMax = femMax(sigmaxy, n);
+  double sigmaxyMin = femMin(sigmaxy, n);
+  double von_MisesMax = femMax(von_Mises, n);
+  double von_MisesMin = femMin(von_Mises, n);
+
+  printf(" ==== Minimum constraint sigma_xx          : %14.7e \n", sigmaxxMin);
+  printf(" ==== Maximum constraint sigma_xx          : %14.7e \n", sigmaxxMax);
+  printf(" ==== Minimum constraint sigma_yy          : %14.7e \n", sigmayyMin);
+  printf(" ==== Maximum constraint sigma_yy          : %14.7e \n", sigmayyMax);
+  printf(" ==== Minimum constraint sigma_xy          : %14.7e \n", sigmaxyMin);
+  printf(" ==== Maximum constraint sigma_xy          : %14.7e \n", sigmaxyMax);
+  printf(" ==== Minimum constraint of Von_mises      : %14.7e \n", von_MisesMin);
+  printf(" ==== Maximum constraint of Von_mises      : %14.7e \n", von_MisesMax); 
+  if(isPlastic) {
+    printf(" ==== The material is in plastic deformation \n");
+  } else {
+    printf(" ==== The material is in elastic deformation \n");
+  }
+  printf("\n ======================================================================================= \n\n");
 
   //
   //  -3- Visualisation
