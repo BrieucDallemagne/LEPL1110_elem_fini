@@ -59,7 +59,7 @@ int main(void) {
   // -2.5- Contraintes
   //
 
-  double yieldConstraint = 2e10;
+  double yieldConstraint = 2e7;
 
   double *sigma = malloc(3 * n * sizeof(double));
 
